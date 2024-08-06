@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35004.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemandMaster", "DemandMaster.csproj", "{96CAAF30-2A1E-4576-9B0B-9A222DBA2040}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{96CAAF30-2A1E-4576-9B0B-9A222DBA2040}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96CAAF30-2A1E-4576-9B0B-9A222DBA2040}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96CAAF30-2A1E-4576-9B0B-9A222DBA2040}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96CAAF30-2A1E-4576-9B0B-9A222DBA2040}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8B85C5ED-BBA3-403E-992B-E318C277AC4F}
+	EndGlobalSection
+EndGlobal

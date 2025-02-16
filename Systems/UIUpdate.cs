@@ -5,14 +5,17 @@ using Game;
 using System;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
+using Game.Simulation;
+using Game.Citizens;
 
-namespace DemandMaster
+namespace DemandMasterControl.Systems
 {
     public partial class UIUpdate : GameSystemBase
     {
         private EntityQuery populationQuery;
         public double PopulationValue = 0;
-        private Setting settings = Mod.m_Setting;
+        private readonly Setting settings = Mod.m_Setting;
 
         protected override void OnCreate()
         {
@@ -20,15 +23,14 @@ namespace DemandMaster
 
             populationQuery = GetEntityQuery(new EntityQueryDesc()
             {
-                All = [
+                All = new[] {
                     ComponentType.ReadOnly<Population>()
-                    ]
+                }
             });
             RequireForUpdate(populationQuery);
-
         }
 
-        protected override void OnGamePreload(Purpose purpose, GameMode mode)
+        protected override void OnGamePreload(Colossal.Serialization.Entities.Purpose purpose, GameMode mode)
         {
             base.OnGamePreload(purpose, mode);
 
@@ -51,15 +53,18 @@ namespace DemandMaster
                 var entities = populationQuery.ToEntityArray(Allocator.Temp);
                 foreach (Entity entity in entities)
                 {
-                    if (EntityManager.TryGetComponent(entity, out Population data))
+                    if (EntityManager.TryGetComponent(entity, out Population population))
                     {
-                        settings.HappinessValue = data.m_AverageHappiness;
+                        int num4 = math.max(settings.MinimumHappiness, population.m_AverageHappiness);
+                        float num6 = settings.HappinessEffect * (float)(num4 - settings.NeutralHappiness) / 1000;
+                        num6 *= population.m_AverageHappiness / 100;
+                        settings.CurrentHappinessValue = $"{population.m_AverageHappiness}% (boosted to {num6}%)";
                     }
                 }
             }
             catch (Exception e)
             {
-                Mod.log.Error(e);
+                Mod.log.Info($"[ERROR]: {e}");
             }
         }
     }

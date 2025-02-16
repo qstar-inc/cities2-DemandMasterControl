@@ -5,8 +5,9 @@ using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Game.City;
 
-namespace DemandMaster
+namespace DemandMasterControl.Systems
 {
     public partial class DemandPrefabSystem : GameSystemBase
     {
@@ -20,9 +21,9 @@ namespace DemandMaster
             prefabSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<PrefabSystem>();
             prefabQuery = GetEntityQuery(new EntityQueryDesc()
             {
-                All = [
-                    ComponentType.ReadWrite<DemandParameterData>()
-                    ],
+                All = new[] {
+                    ComponentType.ReadOnly<DemandParameterData>()
+                }
             });
             RequireForUpdate(prefabQuery);
         }
@@ -57,29 +58,32 @@ namespace DemandMaster
                         data.m_NeutralHomelessness = setting.NeutralHomelessness;
 
                         data.m_FreeResidentialRequirement = new int3(setting.FreeResidentialRequirement_Low, setting.FreeResidentialRequirement_Medium, setting.FreeResidentialRequirement_High);
-                        data.m_FreeCommercialProportion = setting.FreeCommercialProportion;
-                        data.m_FreeIndustrialProportion = setting.FreeIndustrialProportion;
+                        //data.m_FreeCommercialProportion = setting.FreeCommercialProportion;
+                        //data.m_FreeIndustrialProportion = setting.FreeIndustrialProportion;
 
-                        data.m_CommercialStorageMinimum = setting.CommercialStorageMinimum;
-                        data.m_CommercialStorageEffect = setting.CommercialStorageEffect;
+                        //data.m_CommercialStorageMinimum = setting.CommercialStorageMinimum;
+                        //data.m_CommercialStorageEffect = setting.CommercialStorageEffect;
                         data.m_CommercialBaseDemand = setting.CommercialBaseDemand;
 
-                        data.m_IndustrialStorageMinimum = setting.IndustrialStorageMinimum;
-                        data.m_IndustrialStorageEffect = setting.IndustrialStorageEffect;
+                        //data.m_IndustrialStorageMinimum = setting.IndustrialStorageMinimum;
+                        //data.m_IndustrialStorageEffect = setting.IndustrialStorageEffect;
                         data.m_IndustrialBaseDemand = setting.IndustrialBaseDemand;
                         data.m_ExtractorBaseDemand = setting.ExtractorBaseDemand;
-                        data.m_StorageDemandMultiplier = setting.StorageDemandMultiplier;
+                        //data.m_StorageDemandMultiplier = setting.StorageDemandMultiplier;
 
-                        data.m_CommuterWorkerRatioLimit = setting.CommuterWorkerRatioLimit;
                         data.m_CommuterSlowSpawnFactor = setting.CommuterSlowSpawnFactor;
-
-                        data.m_CommuterOCSpawnParameters = ReVal(setting.CommuterOCSpawnParameters_Road, setting.CommuterOCSpawnParameters_Train, setting.CommuterOCSpawnParameters_Air, setting.CommuterOCSpawnParameters_Ship);
-                        data.m_TouristOCSpawnParameters = ReVal(setting.TouristOCSpawnParameters_Road, setting.TouristOCSpawnParameters_Train, setting.TouristOCSpawnParameters_Air, setting.TouristOCSpawnParameters_Ship);
-                        data.m_CitizenOCSpawnParameters = ReVal(setting.CitizenOCSpawnParameters_Road, setting.CitizenOCSpawnParameters_Train, setting.CitizenOCSpawnParameters_Air, setting.CitizenOCSpawnParameters_Ship);
+                        if (!setting.IsRealisticTripsRunning)
+                        {
+                            data.m_CommuterWorkerRatioLimit = setting.CommuterWorkerRatioLimit;
+                            data.m_CommuterOCSpawnParameters = Reval4uf4(setting.CommuterOCSpawnParameters_Road, setting.CommuterOCSpawnParameters_Train, setting.CommuterOCSpawnParameters_Air, setting.CommuterOCSpawnParameters_Ship);
+                        }
+                        data.m_TouristOCSpawnParameters = Reval4uf4(setting.TouristOCSpawnParameters_Road, setting.TouristOCSpawnParameters_Train, setting.TouristOCSpawnParameters_Air, setting.TouristOCSpawnParameters_Ship);
+                        data.m_CitizenOCSpawnParameters = Reval4uf4(setting.CitizenOCSpawnParameters_Road, setting.CitizenOCSpawnParameters_Train, setting.CitizenOCSpawnParameters_Air, setting.CitizenOCSpawnParameters_Ship);
                         data.m_TeenSpawnPercentage = setting.TeenSpawnPercentage;
                         data.m_FrameIntervalForSpawning = new int3(setting.FrameIntervalForSpawning_Res, setting.FrameIntervalForSpawning_Com, setting.FrameIntervalForSpawning_Ind);
                         data.m_HouseholdSpawnSpeedFactor = setting.HouseholdSpawnSpeedFactor;
-                        data.m_NewCitizenEducationParameters =ReValEdu(setting.NewCitizenEducationParameters_Uneducated, setting.NewCitizenEducationParameters_PoorlyEducated, setting.NewCitizenEducationParameters_Educated, setting.NewCitizenEducationParameters_WellEducated, setting.NewCitizenEducationParameters_HighlyEducated);
+                        data.m_HotelRoomPercentRequirement = setting.HotelRoomPercentRequirement;
+                        data.m_NewCitizenEducationParameters = Reval5u4f(setting.NewCitizenEducationParameters_Uneducated, setting.NewCitizenEducationParameters_PoorlyEducated, setting.NewCitizenEducationParameters_Educated, setting.NewCitizenEducationParameters_WellEducated, setting.NewCitizenEducationParameters_HighlyEducated);
 
                         EntityManager.SetComponentData(entity, data);
                     }
@@ -87,9 +91,20 @@ namespace DemandMaster
             }
         }
 
-        public float4 ReValEdu(float l0, float l1, float l2, float l3, float l4)
+        public float4 Reval5u4f(float l0, float l1, float l2, float l3, float l4)
         {
             float total = l0 + l1 + l2 + l3 + l4;
+
+            float yl0 = 100f / 4f;
+            float yl1 = 100f / 4f;
+            float yl2 = 100f / 4f;
+            float yl3 = 100f / 4f;
+
+            if (total == 0)
+            {
+                return new float4(yl0, yl1, yl2, yl3);
+            }
+
             int xl0 = (int)Math.Round(100 * l0 / total);
             int xl1 = (int)Math.Round(100 * l1 / total);
             int xl2 = (int)Math.Round(100 * l2 / total);
@@ -98,33 +113,28 @@ namespace DemandMaster
             int xTotal = xl0 + xl1 + xl2 + xl3 + xl4;
             int currentTotal = 0;
 
-            float yl0 = 0.20f;
-            float yl1 = 0.20f;
-            float yl2 = 0.20f;
-            float yl3 = 0.20f;
 
-
-            if (xTotal != 0)
+            if (xTotal != 0 | total != 0)
             {
                 if (xTotal != 100 && xl4 != 0)
                 {
-                    int diff = 100 - xTotal;
-                    xl4 = xl4 + diff;
+                    //int diff = 100 - xTotal;
+                    //xl4 += diff;
                 }
                 else if (xTotal != 100 && xl3 != 0)
                 {
                     int diff = 100 - xTotal;
-                    xl3 = xl3 + diff;
+                    xl3 += diff;
                 }
                 else if (xTotal != 100 && xl2 != 0)
                 {
                     int diff = 100 - xTotal;
-                    xl2 = xl2 + diff;
+                    xl2 += diff;
                 }
                 else if (xTotal != 100 && xl1 != 0)
                 {
                     int diff = 100 - xTotal;
-                    xl1 = xl1 + diff;
+                    xl1 += diff;
                 }
                 if (xl0 != 0)
                 {
@@ -158,68 +168,74 @@ namespace DemandMaster
             return new float4(yl0, yl1, yl2, yl3);
         }
 
-        public float4 ReVal(float Road, float Train, float Air, float Ship)
+        public float4 Reval4uf4(float l0, float l1, float l2, float l3)
         {
-            float total = Road + Train + Air + Ship;
-            int xRoad = (int)Math.Round(100 * Road / total);
-            int xTrain = (int)Math.Round(100 * Train / total);
-            int xAir = (int)Math.Round(100 * Air / total);
-            int xShip = (int)Math.Round(100 * Ship / total);
-            int xTotal = xRoad + xTrain + xAir + xShip;
-            int currentTotal = 0;
+            float total = l0 + l1 + l2 + l3;
 
-            float yRoad = 0.25f;
-            float yTrain = 0.25f;
-            float yAir = 0.25f;
-            float yShip = 0.25f;
+            float yl0 = 100f / 4f;
+            float yl1 = 100f / 4f;
+            float yl2 = 100f / 4f;
+            float yl3 = 100f / 4f;
+
+            if (total == 0)
+            {
+                return new float4(yl0, yl1, yl2, yl3);
+            }
+
+            int xl0 = (int)Math.Round(100 * l0 / total);
+            int xl1 = (int)Math.Round(100 * l1 / total);
+            int xl2 = (int)Math.Round(100 * l2 / total);
+            int xl3 = (int)Math.Round(100 * l3 / total);
+            int xTotal = xl0 + xl1 + xl2 + xl3;
+            int currentTotal = 0;
 
             if (xTotal != 0)
             {
-                if (xTotal != 100 && xShip != 0)
+                if (xTotal != 100 && xl3 != 0)
                 {
                     int diff = 100 - xTotal;
-                    xShip = xShip + diff;
+                    xl3 += diff;
                 }
-                else if (xTotal != 100 && xAir != 0)
+                else if (xTotal != 100 && xl2 != 0)
                 {
                     int diff = 100 - xTotal;
-                    xAir = xAir + diff;
+                    xl2 += diff;
                 }
-                else if (xTotal != 100 && xTrain != 0)
+                else if (xTotal != 100 && xl1 != 0)
                 {
                     int diff = 100 - xTotal;
-                    xTrain = xTrain + diff;
+                    xl1 += diff;
                 }
-                if (Road != 0f)
+                if (l0 != 0f)
                 {
                     int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xRoad);
-                    yRoad = value / 100f;
+                    int value = Math.Min(remaining, xl0);
+                    yl0 = value / 100f;
                     currentTotal += value;
                 }
-                if (Train != 0f)
+                if (l1 != 0f)
                 {
                     int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xTrain);
-                    yTrain = value / 100f;
+                    int value = Math.Min(remaining, xl1);
+                    yl1 = value / 100f;
                     currentTotal += value;
                 }
-                if (Air != 0f)
+                if (l2 != 0f)
                 {
                     int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xAir);
-                    yAir = value / 100f;
+                    int value = Math.Min(remaining, xl2);
+                    yl2 = value / 100f;
                     currentTotal += value;
                 }
-                if (Ship != 0f)
+                if (l3 != 0f)
                 {
                     int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xShip);
-                    yShip = value / 100f;
+                    int value = Math.Min(remaining, xl3);
+                    yl3 = value / 100f;
                     //currentTotal += value;
                 }
             }
-            return new float4(yRoad, yTrain, yAir, yShip);
+            return new float4(yl0, yl1, yl2, yl3);
         }
     }
 }

@@ -2,30 +2,36 @@
 	<!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
 	<ModId Value="86944" />
 	<!--Name of the mod to display to players-->
-	<DisplayName Value="Demand Master Pro [Alpha]" />
+	<DisplayName Value="Demand Master Control" />
 	<!--Short description of the mod-->
-	<ShortDescription Value="Modify various parameters that leads to stable demand change." />
+	<ShortDescription Value="Fine-tune every parameters leading to stable demand control." />
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
 	<!--LongDescription Value="This is a long description" /-->
 	<LongDescription>
-# Demand Master
-This is a very powerful mod.
-It allows the player to modify a lot of parameters related to the demand system.
-However, this is not an infinite demand mod where buildings get built but nobody moves in.
+# Demand Master Control
 
-That being said I'm calling this an alpha mod, for now.
-Everything works, that much is tested.
-However, it is impossible to find every extremes cases.
+Demand Master Control gives the player full control over how the city grows by allowing them to tweak various demand-related factors, such as employment rates, residential occupancy, tax effects, and commuter behavior. Whether you want a more realistic demand simulation or prefer a more customized experience, this mod provides the flexibility you need.
 
-This mod runs only during the simulation is running.
-That being said, this mod does not touch your save.
-All settings are global and players can use the button above to reset everything to vanilla in one shot.
+## Features
+- **Happiness-Based Demand** – Adjust how citizen happiness influences residential, commercial, and industrial demand.
+- **Workplace Availability** – Fine-tune how free job slots impact demand for different zones.
+- **Tax &amp; Student Effects** – Modify how taxation and student population affect demand calculations.
+- **Homelessness Impact** – Configure how homelessness affects residential demand.
+- **Unoccupied Building Requirement** – Set the threshold for unoccupied residential properties before new demand kicks in.
+- **Hotel &amp; Tourism Demand** – Customize how tourism and hotel room availability impact demand.
+- **Industrial &amp; Extractor Demand** – Manage how demand for industry and raw material extraction is calculated.
+- **Commuter Preferences** – Define the transportation preferences of citizens, commuters, and tourists.
+- **Education-Based Citizen Spawning** – Adjust the probability of new citizens having different education levels.
 
-As always, it is recommended to have reduntant save files just so if your city dies it can be recovered.
-Also, make sure to have autosave on.
+## Configuration
+- All options are fully adjustable via the Options panel.
+- All options can be reset to vanilla using one click.
 
-If you find a case where the simulation is crashing, please do reach out to me to fix those edge cases.
-Enjoy!
+## Compatibility
+- Works with existing saves.
+- May conflict with any future mods that alter core demand calculations.
+- No conflict with legacy infinite demand mods or "Super Fast Building And Leveling".
+- Automatically disables conflicting settings when "Realistic Trips" is active.
 	</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.png" />
@@ -37,17 +43,21 @@ Enjoy!
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.0.0" />
+	<ModVersion Value="2.0.0" />
 	<!--Recommended version of the base game to use the mod-->
-	<GameVersion Value="1.1.*" />
+	<GameVersion Value="1.2.*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-	<ChangeLog Value="1.0.0" />
+	<!--ChangeLog Value="" /-->
 	<ChangeLog>
-# Initial Release
-- Alpha version
+- Updated descriptions for all options
+- Added Hotel demand control
+- Removed unnecessary options and moved everything out of Advanced Options
+- Switched back to LangVersion 9
 	</ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon, buymeacoffee, kofi, crowdin, gitlab-->
-	<ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-DemandMasterPro" />
+	<ExternalLink Type="discord" Url="https://discord.com/channels/1024242828114673724/1270630977483444265" />
+	<ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-DemandMasterControl" />
+	<ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/starq" />
 </Publish>

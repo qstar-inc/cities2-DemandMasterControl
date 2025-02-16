@@ -1,6 +1,10 @@
-﻿using Unity.Mathematics;
+﻿using Game;
+using Game.City;
+using Game.Prefabs;
+using Unity.Entities;
+using Unity.Mathematics;
 
-namespace DemandMaster
+namespace DemandMasterControl.Systems
 {
     public class VanillaData
     {
@@ -33,12 +37,12 @@ namespace DemandMaster
         public float TaxEffect { get; }
         public float StudentEffect { get; }
         public float HouseholdSpawnSpeedFactor { get; }
+        public float HotelRoomPercentRequirement { get; }
         public float4 NewCitizenEducationParameters { get; }
-        public float NewCitizenEducationParameters_v { get; }
+        public float NewCitizenEducationParameters_HighlyRaw { get; }
 
         public VanillaData()
         {
-
             MinimumHappiness = 30;
             HappinessEffect = 2f;
             TaxEffect = 1f;
@@ -68,8 +72,9 @@ namespace DemandMaster
             TeenSpawnPercentage = 0.5f;
             FrameIntervalForSpawning = new int3(0, 2000, 2000);
             HouseholdSpawnSpeedFactor = 0.5f;
+            HotelRoomPercentRequirement = 0.5f;
             NewCitizenEducationParameters = new float4(0.005f, 0.5f, 0.35f, 0.13f);
-            NewCitizenEducationParameters_v = 0.015f;
+            NewCitizenEducationParameters_HighlyRaw = 0.015f;
         }
     }
 }

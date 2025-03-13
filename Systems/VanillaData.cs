@@ -14,7 +14,7 @@ namespace DemandMasterControl.Systems
         public float HomelessEffect { get; }
         public int NeutralHappiness { get; }
         public float NeutralAvailableWorkplacePercentage { get; }
-        public float NeutralHomelessness { get; }
+        public int NeutralHomelessness { get; }
         public int3 FreeResidentialRequirement { get; }
         public float FreeCommercialProportion { get; }
         public float FreeIndustrialProportion { get; }
@@ -52,7 +52,7 @@ namespace DemandMasterControl.Systems
             NeutralHappiness = 45;
             NeutralUnemployment = 20f;
             NeutralAvailableWorkplacePercentage = 10f;
-            NeutralHomelessness = 2f;
+            NeutralHomelessness = 2;
             FreeResidentialRequirement = new int3(5, 10, 10);
             FreeCommercialProportion = 10f;
             FreeIndustrialProportion = 10f;

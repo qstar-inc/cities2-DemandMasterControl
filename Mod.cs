@@ -11,7 +11,7 @@ namespace DemandMasterControl
     public class Mod : IMod
     {
         public static string Name = "Demand Master Control";
-        public static string Version = "2.0.0";
+        public static string Version = "2.0.1";
         public static string Author = "StarQ";
 
         public static ILog log = LogManager.GetLogger($"{nameof(DemandMasterControl)}").SetShowsErrorsInUI(false);

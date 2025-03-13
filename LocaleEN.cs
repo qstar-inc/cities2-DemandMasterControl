@@ -7,13 +7,13 @@ namespace DemandMasterControl
 {
     public class LocaleEN : IDictionarySource
     {
-        private readonly Setting m_Setting;
-        private static readonly VanillaData VanillaData = new();
-
         public LocaleEN(Setting setting)
         {
             m_Setting = setting;
         }
+        private readonly Setting m_Setting;
+        private static readonly VanillaData VanillaData = new();
+
         public string RealisticTripsCheck() { return m_Setting.IsRealisticTripsRunning ? "\r\n[DISABLED] <Realistic Trips> detected" : ""; }
 
         public IEnumerable<KeyValuePair<string, string>> ReadEntries(IList<IDictionaryEntryError> errors, Dictionary<string, int> indexCounts)
@@ -164,7 +164,7 @@ namespace DemandMasterControl
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.NewCitizenEducationParameters_WellEducated)), "Well Educated" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.NewCitizenEducationParameters_WellEducated)), $"{NewCitizenEducationParameters("well educated")} {Default($"{VanillaData.NewCitizenEducationParameters.w * 100}%")}" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.NewCitizenEducationParameters_HighlyEducated)), "Highly Educated" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.NewCitizenEducationParameters_HighlyEducated)), $"{NewCitizenEducationParameters("highly educated")} {Default($"{VanillaData.NewCitizenEducationParameters_HighlyRaw * 100}%")}" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.NewCitizenEducationParameters_HighlyEducated)), $"{NewCitizenEducationParameters("highly educated")} {Default($"{VanillaData.NewCitizenEducationParameters_HighlyRaw * 100}%")}\r\nSetting all other values to 0% and Highly Educated to 100% result in 25% on each Education level and 0 on Highly Educated." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EducationParamText1)), "Current Levels" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.EducationParamText1)), "The overall education level preference for incoming citizens." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EducationParamText2)), "" },

@@ -95,72 +95,72 @@ namespace DemandMasterControl.Systems
         {
             float total = l0 + l1 + l2 + l3 + l4;
 
-            float yl0 = 100f / 4f;
-            float yl1 = 100f / 4f;
-            float yl2 = 100f / 4f;
-            float yl3 = 100f / 4f;
+            float yl0 = 100f / 5f;
+            float yl1 = 100f / 5f;
+            float yl2 = 100f / 5f;
+            float yl3 = 100f / 5f;
 
-            if (total == 0)
+            if (total == 0f || total - l4 == 0f)
             {
                 return new float4(yl0, yl1, yl2, yl3);
             }
 
-            int xl0 = (int)Math.Round(100 * l0 / total);
-            int xl1 = (int)Math.Round(100 * l1 / total);
-            int xl2 = (int)Math.Round(100 * l2 / total);
-            int xl3 = (int)Math.Round(100 * l3 / total);
-            int xl4 = (int)Math.Round(100 * l4 / total);
-            int xTotal = xl0 + xl1 + xl2 + xl3 + xl4;
-            int currentTotal = 0;
+            float xl0 = 100f * l0 / total;
+            float xl1 = 100f * l1 / total;
+            float xl2 = 100f * l2 / total;
+            float xl3 = 100f * l3 / total;
+            float xl4 = 100f * l4 / total;
+            float xTotal = xl0 + xl1 + xl2 + xl3 + xl4;
+            float currentTotal = 0f;
 
 
-            if (xTotal != 0 | total != 0)
+            if (xTotal != 0f | total != 0f)
             {
-                if (xTotal != 100 && xl4 != 0)
+                if (xTotal != 100f && xl4 != 0f)
                 {
                     //int diff = 100 - xTotal;
                     //xl4 += diff;
                 }
-                else if (xTotal != 100 && xl3 != 0)
+                else if (xTotal != 100f && xl3 != 0f)
                 {
-                    int diff = 100 - xTotal;
+                    float diff = 100f - xTotal;
                     xl3 += diff;
                 }
-                else if (xTotal != 100 && xl2 != 0)
+                else if (xTotal != 100f && xl2 != 0f)
                 {
-                    int diff = 100 - xTotal;
+                    float diff = 100f - xTotal;
                     xl2 += diff;
                 }
-                else if (xTotal != 100 && xl1 != 0)
+                else if (xTotal != 100f && xl1 != 0f)
                 {
-                    int diff = 100 - xTotal;
+                    float diff = 100f - xTotal;
                     xl1 += diff;
                 }
-                if (xl0 != 0)
+                if (xl0 != 0f)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl0);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl0);
                     yl0 = value / 100f;
                     currentTotal += value;
                 }
-                if (xl1 != 0)
+                if (xl1 != 0f)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl1);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl1);
                     yl1 = value / 100f;
                     currentTotal += value;
                 }
-                if (xl2 != 0)
+                if (xl2 != 0f)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl2);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl2);
                     yl2 = value / 100f;
                     currentTotal += value;
                 }
-                if (xl3 != 0)
+                if (xl3 != 0f)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl3);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl3);
                     yl3 = value / 100f;
                     //currentTotal += value;
                 }
@@ -177,60 +177,60 @@ namespace DemandMasterControl.Systems
             float yl2 = 100f / 4f;
             float yl3 = 100f / 4f;
 
-            if (total == 0)
+            if (total == 0f)
             {
                 return new float4(yl0, yl1, yl2, yl3);
             }
 
-            int xl0 = (int)Math.Round(100 * l0 / total);
-            int xl1 = (int)Math.Round(100 * l1 / total);
-            int xl2 = (int)Math.Round(100 * l2 / total);
-            int xl3 = (int)Math.Round(100 * l3 / total);
-            int xTotal = xl0 + xl1 + xl2 + xl3;
-            int currentTotal = 0;
+            float xl0 = 100f * l0 / total;
+            float xl1 = 100f * l1 / total;
+            float xl2 = 100f * l2 / total;
+            float xl3 = 100f * l3 / total;
+            float xTotal = xl0 + xl1 + xl2 + xl3;
+            float currentTotal = 0f;
 
-            if (xTotal != 0)
+            if (xTotal != 0f)
             {
-                if (xTotal != 100 && xl3 != 0)
+                if (xTotal != 100f && xl3 != 0f)
                 {
-                    int diff = 100 - xTotal;
+                    float diff = 100f - xTotal;
                     xl3 += diff;
                 }
-                else if (xTotal != 100 && xl2 != 0)
+                else if (xTotal != 100f && xl2 != 0f)
                 {
-                    int diff = 100 - xTotal;
+                    float diff = 100f - xTotal;
                     xl2 += diff;
                 }
-                else if (xTotal != 100 && xl1 != 0)
+                else if (xTotal != 100f && xl1 != 0f)
                 {
-                    int diff = 100 - xTotal;
+                    float diff = 100f - xTotal;
                     xl1 += diff;
                 }
                 if (l0 != 0f)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl0);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl0);
                     yl0 = value / 100f;
                     currentTotal += value;
                 }
                 if (l1 != 0f)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl1);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl1);
                     yl1 = value / 100f;
                     currentTotal += value;
                 }
                 if (l2 != 0f)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl2);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl2);
                     yl2 = value / 100f;
                     currentTotal += value;
                 }
                 if (l3 != 0f)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl3);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl3);
                     yl3 = value / 100f;
                     //currentTotal += value;
                 }

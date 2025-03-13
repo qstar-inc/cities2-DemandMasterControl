@@ -43,7 +43,7 @@ Demand Master Control gives the player full control over how the city grows by a
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="" />
 	<!--Version of the mod-->
-	<ModVersion Value="2.0.0" />
+	<ModVersion Value="2.0.1" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.2.*" />
 	<!--Dependency for the mod, can be set multiple times-->
@@ -51,10 +51,7 @@ Demand Master Control gives the player full control over how the city grows by a
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
 	<!--ChangeLog Value="" /-->
 	<ChangeLog>
-- Updated descriptions for all options
-- Added Hotel demand control
-- Removed unnecessary options and moved everything out of Advanced Options
-- Switched back to LangVersion 9
+- Fix for education factor not working as expected.
 	</ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon, buymeacoffee, kofi, crowdin, gitlab-->
 	<ExternalLink Type="discord" Url="https://discord.com/channels/1024242828114673724/1270630977483444265" />

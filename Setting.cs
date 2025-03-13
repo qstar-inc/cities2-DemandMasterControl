@@ -90,7 +90,7 @@ namespace DemandMasterControl
 
         [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(FactorTab, OthersGroup)]
-        public float NeutralHomelessness { get; set; } = VanillaData.NeutralHomelessness;
+        public int NeutralHomelessness { get; set; } = VanillaData.NeutralHomelessness;
 
         [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(DemandTab, ResiDemandGroup)]
@@ -332,96 +332,96 @@ namespace DemandMasterControl
         public (string, string) ReValEdu(float l0, float l1, float l2, float l3, float l4)
         {
             float total = l0 + l1 + l2 + l3 + l4;
-            int xl0 = (int)Math.Round(100 * l0 / total);
-            int xl1 = (int)Math.Round(100 * l1 / total);
-            int xl2 = (int)Math.Round(100 * l2 / total);
-            int xl3 = (int)Math.Round(100 * l3 / total);
-            int xl4 = (int)Math.Round(100 * l4 / total);
-            int xTotal = xl0 + xl1 + xl2 + xl3 + xl4;
+            float xl0 = 100 * l0 / total;
+            float xl1 = 100 * l1 / total;
+            float xl2 = 100 * l2 / total;
+            float xl3 = 100 * l3 / total;
+            float xl4 = 100 * l4 / total;
+            float xTotal = xl0 + xl1 + xl2 + xl3 + xl4;
             string text1 = "";
             string text2 = "";
-            int currentTotal = 0;
+            float currentTotal = 0;
 
-            if (xTotal == 0 || total == 0f)
+            if (xTotal == 0f || total == 0f || total - l4 == 0f)
             {
                 text1 = "Uneducated: 20%, Poorly Educated: 20%;";
                 text2 = "Educated: 20%, Well Educated: 20%, Highly Educated: 20%";
             }
             else
             {
-                if (xTotal != 100 && xl4 != 0)
+                if (xTotal != 100f && xl4 != 0)
                 {
-                    int diff = 100 - xTotal;
+                    float diff = 100f - xTotal;
                     xl4 += diff;
                 }
                 else if (xTotal != 100 && xl3 != 0)
                 {
-                    int diff = 100 - xTotal;
+                    float diff = 100f - xTotal;
                     xl3 += diff;
                 }
                 else if (xTotal != 100 && xl2 != 0)
                 {
-                    int diff = 100 - xTotal;
+                    float diff = 100f - xTotal;
                     xl2 += diff;
                 }
                 else if (xTotal != 100 && xl1 != 0)
                 {
-                    int diff = 100 - xTotal;
+                    float diff = 100f - xTotal;
                     xl1 += diff;
                 }
                 if (1 == 1)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl0);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl0);
                     if (!string.IsNullOrEmpty(text1))
                     {
                         text1 += ", ";
                     }
-                    text1 += $"Uneducated: {value}%";
+                    text1 += $"Uneducated: {Math.Round(value, 3)}%";
                     currentTotal += value;
                 }
                 if (1 == 1)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl1);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl1);
                     if (!string.IsNullOrEmpty(text1))
                     {
                         text1 += ", ";
                     }
-                    text1 += $"Poorly Educated: {value}%";
+                    text1 += $"Poorly Educated: {Math.Round(value, 3)}%";
                     currentTotal += value;
                 }
                 if (1 == 1)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl2);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl2);
                     if (!string.IsNullOrEmpty(text2))
                     {
                         text2 += ", ";
                     }
-                    text2 += $"Educated: {value}%";
+                    text2 += $"Educated: {Math.Round(value, 3)}%";
                     currentTotal += value;
                 }
                 if (1 == 1)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl3);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl3);
                     if (!string.IsNullOrEmpty(text2))
                     {
                         text2 += ", ";
                     }
-                    text2 += $"Well Educated: {value}%";
+                    text2 += $"Well Educated: {Math.Round(value, 3)}%";
                     currentTotal += value;
                 }
                 if (1 == 1)
                 {
-                    int remaining = 100 - currentTotal;
-                    int value = Math.Min(remaining, xl4);
+                    float remaining = 100f - currentTotal;
+                    float value = Math.Min(remaining, xl4);
                     if (!string.IsNullOrEmpty(text2))
                     {
                         text2 += ", ";
                     }
-                    text2 += $"Highly Educated: {value}%";
+                    text2 += $"Highly Educated: {Math.Round(value,3)}%";
                     //currentTotal += value;
                 }
             }
@@ -513,7 +513,12 @@ namespace DemandMasterControl
         public string NameText => Mod.Name;
 
         [SettingsUISection(AboutTab, InfoGroup)]
-        public string VersionText => Mod.Version;
+        public string VersionText =>
+#if DEBUG
+            $"{Mod.Version} - DEV";
+#else
+            Mod.Version;
+#endif
 
         [SettingsUISection(AboutTab, InfoGroup)]
         public string AuthorText => "StarQ";

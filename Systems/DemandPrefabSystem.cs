@@ -1,11 +1,11 @@
-﻿using Colossal.Entities;
-using Game.Prefabs;
+﻿using System;
+using Colossal.Entities;
 using Game;
-using System;
+using Game.City;
+using Game.Prefabs;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Game.City;
 
 namespace DemandMasterControl.Systems
 {
@@ -18,75 +18,124 @@ namespace DemandMasterControl.Systems
         protected override void OnCreate()
         {
             base.OnCreate();
-            prefabSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<PrefabSystem>();
-            prefabQuery = GetEntityQuery(new EntityQueryDesc()
-            {
-                All = new[] {
-                    ComponentType.ReadOnly<DemandParameterData>()
+            prefabSystem =
+                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<PrefabSystem>();
+            prefabQuery = GetEntityQuery(
+                new EntityQueryDesc()
+                {
+                    All = new[] { ComponentType.ReadOnly<DemandParameterData>() },
                 }
-            });
+            );
             RequireForUpdate(prefabQuery);
         }
+
         protected override void OnUpdate()
         {
-            var entites = prefabQuery.ToEntityArray(Allocator.Temp);
-            Entity entity;
-            //Mod.log.Info(entites.Length);
-
-            if (entites.Length == 1)
+            Setting settings = Mod.m_Setting;
+            if (settings.Changes)
             {
-                entity = entites[0];
-                if (!prefabSystem.TryGetPrefab(entity, out PrefabBase prefabBase))
+                try
                 {
-                    return;
-                }
-
-                if (prefabBase != null)
-                {
-                    if (EntityManager.TryGetComponent(entity, out DemandParameterData data))
+                    var entities = prefabQuery.ToEntityArray(Allocator.Temp);
+                    foreach (Entity entity in entities)
                     {
-                        data.m_MinimumHappiness = setting.MinimumHappiness;
-                        data.m_HappinessEffect = setting.HappinessEffect;
-                        data.m_TaxEffect = setting.TaxEffect;
-                        data.m_StudentEffect = setting.StudentEffect;
-                        data.m_AvailableWorkplaceEffect = setting.AvailableWorkplaceEffect;
-                        data.m_HomelessEffect = setting.HomelessEffect;
-
-                        data.m_NeutralHappiness = setting.NeutralHappiness;
-                        data.m_NeutralUnemployment = setting.NeutralUnemployment;
-                        data.m_NeutralAvailableWorkplacePercentage = setting.NeutralAvailableWorkplacePercentage;
-                        data.m_NeutralHomelessness = setting.NeutralHomelessness;
-
-                        data.m_FreeResidentialRequirement = new int3(setting.FreeResidentialRequirement_Low, setting.FreeResidentialRequirement_Medium, setting.FreeResidentialRequirement_High);
-                        //data.m_FreeCommercialProportion = setting.FreeCommercialProportion;
-                        //data.m_FreeIndustrialProportion = setting.FreeIndustrialProportion;
-
-                        //data.m_CommercialStorageMinimum = setting.CommercialStorageMinimum;
-                        //data.m_CommercialStorageEffect = setting.CommercialStorageEffect;
-                        data.m_CommercialBaseDemand = setting.CommercialBaseDemand;
-
-                        //data.m_IndustrialStorageMinimum = setting.IndustrialStorageMinimum;
-                        //data.m_IndustrialStorageEffect = setting.IndustrialStorageEffect;
-                        data.m_IndustrialBaseDemand = setting.IndustrialBaseDemand;
-                        data.m_ExtractorBaseDemand = setting.ExtractorBaseDemand;
-                        //data.m_StorageDemandMultiplier = setting.StorageDemandMultiplier;
-
-                        data.m_CommuterSlowSpawnFactor = setting.CommuterSlowSpawnFactor;
-                        if (!setting.IsRealisticTripsRunning)
+                        if (!prefabSystem.TryGetPrefab(entity, out PrefabBase prefabBase))
                         {
-                            data.m_CommuterWorkerRatioLimit = setting.CommuterWorkerRatioLimit;
-                            data.m_CommuterOCSpawnParameters = Reval4uf4(setting.CommuterOCSpawnParameters_Road, setting.CommuterOCSpawnParameters_Train, setting.CommuterOCSpawnParameters_Air, setting.CommuterOCSpawnParameters_Ship);
+                            continue;
                         }
-                        data.m_TouristOCSpawnParameters = Reval4uf4(setting.TouristOCSpawnParameters_Road, setting.TouristOCSpawnParameters_Train, setting.TouristOCSpawnParameters_Air, setting.TouristOCSpawnParameters_Ship);
-                        data.m_CitizenOCSpawnParameters = Reval4uf4(setting.CitizenOCSpawnParameters_Road, setting.CitizenOCSpawnParameters_Train, setting.CitizenOCSpawnParameters_Air, setting.CitizenOCSpawnParameters_Ship);
-                        data.m_TeenSpawnPercentage = setting.TeenSpawnPercentage;
-                        data.m_FrameIntervalForSpawning = new int3(setting.FrameIntervalForSpawning_Res, setting.FrameIntervalForSpawning_Com, setting.FrameIntervalForSpawning_Ind);
-                        data.m_HouseholdSpawnSpeedFactor = setting.HouseholdSpawnSpeedFactor;
-                        data.m_HotelRoomPercentRequirement = setting.HotelRoomPercentRequirement;
-                        data.m_NewCitizenEducationParameters = Reval5u4f(setting.NewCitizenEducationParameters_Uneducated, setting.NewCitizenEducationParameters_PoorlyEducated, setting.NewCitizenEducationParameters_Educated, setting.NewCitizenEducationParameters_WellEducated, setting.NewCitizenEducationParameters_HighlyEducated);
 
-                        EntityManager.SetComponentData(entity, data);
+                        if (prefabBase != null)
+                        {
+                            if (
+                                EntityManager.TryGetComponent(entity, out DemandParameterData data)
+                                && prefabSystem.GetPrefabName(entity).Contains("DemandParameters")
+                            )
+                            {
+                                data.m_MinimumHappiness = setting.MinimumHappiness;
+                                data.m_HappinessEffect = setting.HappinessEffect;
+                                data.m_TaxEffect = new float3(
+                                    setting.TaxEffect_x,
+                                    setting.TaxEffect_y,
+                                    setting.TaxEffect_z
+                                );
+                                data.m_StudentEffect = setting.StudentEffect;
+                                data.m_AvailableWorkplaceEffect = setting.AvailableWorkplaceEffect;
+                                data.m_HomelessEffect = setting.HomelessEffect;
+
+                                data.m_NeutralHappiness = setting.NeutralHappiness;
+                                data.m_NeutralUnemployment = setting.NeutralUnemployment;
+                                data.m_NeutralAvailableWorkplacePercentage =
+                                    setting.NeutralAvailableWorkplacePercentage;
+                                data.m_NeutralHomelessness = setting.NeutralHomelessness;
+
+                                data.m_FreeResidentialRequirement = new int3(
+                                    setting.FreeResidentialRequirement_Low,
+                                    setting.FreeResidentialRequirement_Medium,
+                                    setting.FreeResidentialRequirement_High
+                                );
+                                //data.m_FreeCommercialProportion = setting.FreeCommercialProportion;
+                                //data.m_FreeIndustrialProportion = setting.FreeIndustrialProportion;
+
+                                //data.m_CommercialStorageMinimum = setting.CommercialStorageMinimum;
+                                //data.m_CommercialStorageEffect = setting.CommercialStorageEffect;
+                                data.m_CommercialBaseDemand = setting.CommercialBaseDemand;
+
+                                //data.m_IndustrialStorageMinimum = setting.IndustrialStorageMinimum;
+                                //data.m_IndustrialStorageEffect = setting.IndustrialStorageEffect;
+                                data.m_IndustrialBaseDemand = setting.IndustrialBaseDemand;
+                                data.m_ExtractorBaseDemand = setting.ExtractorBaseDemand;
+                                //data.m_StorageDemandMultiplier = setting.StorageDemandMultiplier;
+
+                                data.m_CommuterSlowSpawnFactor = setting.CommuterSlowSpawnFactor;
+                                if (!setting.IsRealisticTripsRunning)
+                                {
+                                    data.m_CommuterWorkerRatioLimit =
+                                        setting.CommuterWorkerRatioLimit;
+                                    data.m_CommuterOCSpawnParameters = Reval4uf4(
+                                        setting.CommuterOCSpawnParameters_Road,
+                                        setting.CommuterOCSpawnParameters_Train,
+                                        setting.CommuterOCSpawnParameters_Air,
+                                        setting.CommuterOCSpawnParameters_Ship
+                                    );
+                                }
+                                data.m_TouristOCSpawnParameters = Reval4uf4(
+                                    setting.TouristOCSpawnParameters_Road,
+                                    setting.TouristOCSpawnParameters_Train,
+                                    setting.TouristOCSpawnParameters_Air,
+                                    setting.TouristOCSpawnParameters_Ship
+                                );
+                                data.m_CitizenOCSpawnParameters = Reval4uf4(
+                                    setting.CitizenOCSpawnParameters_Road,
+                                    setting.CitizenOCSpawnParameters_Train,
+                                    setting.CitizenOCSpawnParameters_Air,
+                                    setting.CitizenOCSpawnParameters_Ship
+                                );
+                                data.m_TeenSpawnPercentage = setting.TeenSpawnPercentage;
+                                data.m_FrameIntervalForSpawning = new int3(
+                                    setting.FrameIntervalForSpawning_Res,
+                                    setting.FrameIntervalForSpawning_Com,
+                                    setting.FrameIntervalForSpawning_Ind
+                                );
+                                data.m_HouseholdSpawnSpeedFactor =
+                                    setting.HouseholdSpawnSpeedFactor;
+                                data.m_HotelRoomPercentRequirement =
+                                    setting.HotelRoomPercentRequirement;
+                                data.m_NewCitizenEducationParameters = Reval5u4f(
+                                    setting.NewCitizenEducationParameters_Uneducated,
+                                    setting.NewCitizenEducationParameters_PoorlyEducated,
+                                    setting.NewCitizenEducationParameters_Educated,
+                                    setting.NewCitizenEducationParameters_WellEducated,
+                                    setting.NewCitizenEducationParameters_HighlyEducated
+                                );
+
+                                EntityManager.SetComponentData(entity, data);
+                            }
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    Mod.log.Error(e);
                 }
             }
         }
@@ -112,7 +161,6 @@ namespace DemandMasterControl.Systems
             float xl4 = 100f * l4 / total;
             float xTotal = xl0 + xl1 + xl2 + xl3 + xl4;
             float currentTotal = 0f;
-
 
             if (xTotal != 0f | total != 0f)
             {

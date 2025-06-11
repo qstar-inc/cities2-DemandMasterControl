@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<OutputType>Library</OutputType>
-		<TargetFramework>net472</TargetFramework>
 		<Configurations>Debug;Release</Configurations>
-		<LangVersion>9</LangVersion>
+		
 		<AssemblyName>DemandMasterControl</AssemblyName>
-		<Title>Demand Master Control</Title>
-		<Version>2.0.2</Version>
+		<AssemblyTitle>Demand Master Control</AssemblyTitle>
+		<Version>2.0.3</Version>
 		<Authors>StarQ</Authors>
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->

@@ -1,26 +1,84 @@
-﻿using Colossal.IO.AssetDatabase;
+﻿using System;
+using System.Collections.Generic;
+using Colossal.IO.AssetDatabase;
 using Colossal.Json;
 using DemandMasterControl.Systems;
 using Game.Modding;
 using Game.Settings;
 using Game.UI;
-using System;
 using UnityEngine.Device;
 
 namespace DemandMasterControl
 {
-    [FileLocation("ModsSettings\\StarQ\\"+nameof(DemandMasterControl))]
+    [FileLocation("ModsSettings\\StarQ\\" + nameof(DemandMasterControl))]
     [SettingsUITabOrder(DemandTab, FactorTab, OCTab, AboutTab)]
-    [SettingsUIGroupOrder(ResiDemandGroup, CommDemandGroup, IndDemandGroup, HappinessGroup, WorkplaceGroup, SpawnGroup, OthersGroup, CitizenGroup, CitizenPrefGroup, CommuterGroup, CommuterPrefGroup, TouristPrefGroup, EduGroup, InfoGroup)]
-    [SettingsUIShowGroupName(ResiDemandGroup, CommDemandGroup, IndDemandGroup, HappinessGroup, WorkplaceGroup, SpawnGroup, OthersGroup, CitizenGroup, CitizenPrefGroup, CommuterGroup, CommuterPrefGroup, TouristPrefGroup, EduGroup)]
+    [SettingsUIGroupOrder(
+        ResiDemandGroup,
+        CommDemandGroup,
+        IndDemandGroup,
+        HappinessGroup,
+        WorkplaceGroup,
+        SpawnGroup,
+        OthersGroup,
+        CitizenGroup,
+        CitizenPrefGroup,
+        CommuterGroup,
+        CommuterPrefGroup,
+        TouristPrefGroup,
+        EduGroup,
+        InfoGroup
+    )]
+    [SettingsUIShowGroupName(
+        ResiDemandGroup,
+        CommDemandGroup,
+        IndDemandGroup,
+        HappinessGroup,
+        WorkplaceGroup,
+        SpawnGroup,
+        OthersGroup,
+        CitizenGroup,
+        CitizenPrefGroup,
+        CommuterGroup,
+        CommuterPrefGroup,
+        TouristPrefGroup,
+        EduGroup
+    )]
     public class Setting : ModSetting
     {
-        public Setting(IMod mod) : base(mod)
+        public Setting(IMod mod)
+            : base(mod)
         {
             SetDefaults();
         }
 
-        private static readonly VanillaData VanillaData = new();
+        private readonly Dictionary<string, object> _values = new();
+
+        private T GetValue<T>(string propertyName, T defaultValue = default)
+        {
+            if (_values.TryGetValue(propertyName, out var value))
+            {
+                try
+                {
+                    return (T)Convert.ChangeType(value, typeof(T));
+                }
+                catch (InvalidCastException)
+                {
+                    Mod.log.Info(
+                        $"Warning: Unable to cast setting '{propertyName}' to {typeof(T)}. Returning default."
+                    );
+                }
+            }
+            return defaultValue;
+        }
+
+        private void SetValue<T>(string propertyName, T value, Action onChanged = null)
+        {
+            _values[propertyName] = value;
+            onChanged?.Invoke();
+        }
+
+        [Exclude]
+        public VanillaData VanillaDataFromStorage = new();
 
         public const string FactorTab = "Factors";
         public const string HappinessGroup = "Happiness";
@@ -46,67 +104,219 @@ namespace DemandMasterControl
 
         public const string UnitFrame = " Frames";
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(FactorTab, HappinessGroup)]
-        public int MinimumHappiness { get; set; } = VanillaData.MinimumHappiness;
+        public int MinimumHappiness
+        {
+            get => GetValue(nameof(MinimumHappiness), VanillaDataFromStorage.m_MinimumHappiness);
+            set => SetValue(nameof(MinimumHappiness), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(FactorTab, HappinessGroup)]
-        public int NeutralHappiness { get; set; } = VanillaData.NeutralHappiness;
+        public int NeutralHappiness
+        {
+            get => GetValue(nameof(NeutralHappiness), VanillaDataFromStorage.m_NeutralHappiness);
+            set => SetValue(nameof(NeutralHappiness), value, ApplyChanges);
+        }
 
         [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUISection(FactorTab, HappinessGroup)]
-        public float HappinessEffect { get; set; } = VanillaData.HappinessEffect;
+        public float HappinessEffect
+        {
+            get => GetValue(nameof(HappinessEffect), VanillaDataFromStorage.m_HappinessEffect);
+            set => SetValue(nameof(HappinessEffect), value, ApplyChanges);
+        }
 
         [SettingsUISection(FactorTab, HappinessGroup)]
         public string CurrentHappiness => CurrentHappinessValue;
 
         [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUISection(FactorTab, WorkplaceGroup)]
-        public float AvailableWorkplaceEffect { get; set; } = VanillaData.AvailableWorkplaceEffect;
+        public float AvailableWorkplaceEffect
+        {
+            get =>
+                GetValue(
+                    nameof(AvailableWorkplaceEffect),
+                    VanillaDataFromStorage.m_AvailableWorkplaceEffect
+                );
+            set => SetValue(nameof(AvailableWorkplaceEffect), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(FactorTab, WorkplaceGroup)]
-        public float NeutralUnemployment { get; set; } = VanillaData.NeutralUnemployment;
+        public float NeutralUnemployment
+        {
+            get =>
+                GetValue(nameof(NeutralUnemployment), VanillaDataFromStorage.m_NeutralUnemployment);
+            set => SetValue(nameof(NeutralUnemployment), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(FactorTab, WorkplaceGroup)]
-        public float NeutralAvailableWorkplacePercentage { get; set; } = VanillaData.NeutralAvailableWorkplacePercentage;
+        public float NeutralAvailableWorkplacePercentage
+        {
+            get =>
+                GetValue(
+                    nameof(NeutralAvailableWorkplacePercentage),
+                    VanillaDataFromStorage.m_NeutralAvailableWorkplacePercentage
+                );
+            set => SetValue(nameof(NeutralAvailableWorkplacePercentage), value, ApplyChanges);
+        }
 
         //[SettingsUISection(FactorTab, HappinessGroup)]
         //public string CurrentUnemployment => $"{CurrentUnemploymentValue}%";
 
         [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUISection(FactorTab, OthersGroup)]
-        public float TaxEffect { get; set; } = VanillaData.TaxEffect;
+        public float TaxEffect_x
+        {
+            get => GetValue(nameof(TaxEffect_x), VanillaDataFromStorage.m_TaxEffect.x);
+            set => SetValue(nameof(TaxEffect_x), value, ApplyChanges);
+        }
 
         [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUISection(FactorTab, OthersGroup)]
-        public float StudentEffect { get; set; } = VanillaData.StudentEffect;
+        public float TaxEffect_y
+        {
+            get => GetValue(nameof(TaxEffect_y), VanillaDataFromStorage.m_TaxEffect.y);
+            set => SetValue(nameof(TaxEffect_y), value, ApplyChanges);
+        }
 
         [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUISection(FactorTab, OthersGroup)]
-        public float HomelessEffect { get; set; } = VanillaData.HomelessEffect;
+        public float TaxEffect_z
+        {
+            get => GetValue(nameof(TaxEffect_z), VanillaDataFromStorage.m_TaxEffect.z);
+            set => SetValue(nameof(TaxEffect_z), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUISection(FactorTab, OthersGroup)]
-        public int NeutralHomelessness { get; set; } = VanillaData.NeutralHomelessness;
+        public float StudentEffect
+        {
+            get => GetValue(nameof(StudentEffect), VanillaDataFromStorage.m_StudentEffect);
+            set => SetValue(nameof(StudentEffect), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
+        [SettingsUISection(FactorTab, OthersGroup)]
+        public float HomelessEffect
+        {
+            get => GetValue(nameof(HomelessEffect), VanillaDataFromStorage.m_HomelessEffect);
+            set => SetValue(nameof(HomelessEffect), value, ApplyChanges);
+        }
+
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kPercentage
+        )]
+        [SettingsUISection(FactorTab, OthersGroup)]
+        public int NeutralHomelessness
+        {
+            get =>
+                GetValue(nameof(NeutralHomelessness), VanillaDataFromStorage.m_NeutralHomelessness);
+            set => SetValue(nameof(NeutralHomelessness), value, ApplyChanges);
+        }
+
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(DemandTab, ResiDemandGroup)]
-        public int FreeResidentialRequirement_Low { get; set; } = VanillaData.FreeResidentialRequirement.x;
+        public int FreeResidentialRequirement_Low
+        {
+            get =>
+                GetValue(
+                    nameof(FreeResidentialRequirement_Low),
+                    VanillaDataFromStorage.m_FreeResidentialRequirement.x
+                );
+            set => SetValue(nameof(FreeResidentialRequirement_Low), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(DemandTab, ResiDemandGroup)]
-        public int FreeResidentialRequirement_Medium { get; set; } = VanillaData.FreeResidentialRequirement.y;
+        public int FreeResidentialRequirement_Medium
+        {
+            get =>
+                GetValue(
+                    nameof(FreeResidentialRequirement_Medium),
+                    VanillaDataFromStorage.m_FreeResidentialRequirement.y
+                );
+            set => SetValue(nameof(FreeResidentialRequirement_Medium), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(DemandTab, ResiDemandGroup)]
-        public int FreeResidentialRequirement_High { get; set; } = VanillaData.FreeResidentialRequirement.z;
+        public int FreeResidentialRequirement_High
+        {
+            get =>
+                GetValue(
+                    nameof(FreeResidentialRequirement_High),
+                    VanillaDataFromStorage.m_FreeResidentialRequirement.z
+                );
+            set => SetValue(nameof(FreeResidentialRequirement_High), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
+        [SettingsUISlider(
+            min = 0,
+            max = 50,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kFloatTwoFractions
+        )]
         [SettingsUISection(DemandTab, CommDemandGroup)]
-        public float CommercialBaseDemand { get; set; } = VanillaData.CommercialBaseDemand;
+        public float CommercialBaseDemand
+        {
+            get =>
+                GetValue(
+                    nameof(CommercialBaseDemand),
+                    VanillaDataFromStorage.m_CommercialBaseDemand
+                );
+            set => SetValue(nameof(CommercialBaseDemand), value, ApplyChanges);
+        }
 
         //[SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
         //[SettingsUISection(DemandTab, CommDemandGroup)]
@@ -115,18 +325,46 @@ namespace DemandMasterControl
         //[SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
         //[SettingsUISection(DemandTab, CommDemandGroup)]
         //public float CommercialStorageMinimum { get; set; } = VanillaData.CommercialStorageMinimum;
-        
+
         //[SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
         //[SettingsUISection(DemandTab, CommDemandGroup)]
         //public float CommercialStorageEffect { get; set; } = VanillaData.CommercialStorageEffect;
 
-        [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
+        [SettingsUISlider(
+            min = 0,
+            max = 50,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kFloatTwoFractions
+        )]
         [SettingsUISection(DemandTab, CommDemandGroup)]
-        public float HotelRoomPercentRequirement { get; set; } = VanillaData.HotelRoomPercentRequirement;
+        public float HotelRoomPercentRequirement
+        {
+            get =>
+                GetValue(
+                    nameof(HotelRoomPercentRequirement),
+                    VanillaDataFromStorage.m_HotelRoomPercentRequirement
+                );
+            set => SetValue(nameof(HotelRoomPercentRequirement), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
+        [SettingsUISlider(
+            min = 0,
+            max = 50,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kFloatTwoFractions
+        )]
         [SettingsUISection(DemandTab, IndDemandGroup)]
-        public float IndustrialBaseDemand { get; set; } = VanillaData.IndustrialBaseDemand;
+        public float IndustrialBaseDemand
+        {
+            get =>
+                GetValue(
+                    nameof(IndustrialBaseDemand),
+                    VanillaDataFromStorage.m_IndustrialBaseDemand
+                );
+            set => SetValue(nameof(IndustrialBaseDemand), value, ApplyChanges);
+        }
 
         //[SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kPercentage)]
         //[SettingsUISection(DemandTab, IndDemandGroup)]
@@ -140,9 +378,20 @@ namespace DemandMasterControl
         //[SettingsUISection(DemandTab, IndDemandGroup)]
         //public float IndustrialStorageEffect { get; set; } = VanillaData.IndustrialStorageEffect;
 
-        [SettingsUISlider(min = 0, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
+        [SettingsUISlider(
+            min = 0,
+            max = 50,
+            step = 1,
+            scalarMultiplier = 1,
+            unit = Unit.kFloatTwoFractions
+        )]
         [SettingsUISection(DemandTab, IndDemandGroup)]
-        public float ExtractorBaseDemand { get; set; } = VanillaData.ExtractorBaseDemand;
+        public float ExtractorBaseDemand
+        {
+            get =>
+                GetValue(nameof(ExtractorBaseDemand), VanillaDataFromStorage.m_ExtractorBaseDemand);
+            set => SetValue(nameof(ExtractorBaseDemand), value, ApplyChanges);
+        }
 
         //[SettingsUISlider(min = 0, max = 1, step = 0.00001f, scalarMultiplier = 10000, unit = Unit.kFloatTwoFractions)]
         //[SettingsUISection(DemandTab, IndDemandGroup)]
@@ -151,119 +400,480 @@ namespace DemandMasterControl
         [SettingsUIDisableByCondition(typeof(Setting), nameof(IsRealisticTripsRunning))]
         [SettingsUISlider(min = 1, max = 20, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUISection(OCTab, CommuterGroup)]
-        public int CommuterWorkerRatioLimit { get; set; } = VanillaData.CommuterWorkerRatioLimit;
+        public int CommuterWorkerRatioLimit
+        {
+            get =>
+                GetValue(
+                    nameof(CommuterWorkerRatioLimit),
+                    VanillaDataFromStorage.m_CommuterWorkerRatioLimit
+                );
+            set => SetValue(nameof(CommuterWorkerRatioLimit), value, ApplyChanges);
+        }
 
         [SettingsUISlider(min = 1, max = 20, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         [SettingsUISection(OCTab, CommuterGroup)]
-        public int CommuterSlowSpawnFactor { get; set; } = VanillaData.CommuterSlowSpawnFactor;
+        public int CommuterSlowSpawnFactor
+        {
+            get =>
+                GetValue(
+                    nameof(CommuterSlowSpawnFactor),
+                    VanillaDataFromStorage.m_CommuterSlowSpawnFactor
+                );
+            set => SetValue(nameof(CommuterSlowSpawnFactor), value, ApplyChanges);
+        }
 
         [SettingsUIDisableByCondition(typeof(Setting), nameof(IsRealisticTripsRunning))]
-        [SettingsUISlider(min = 0, max = 100, step = 5, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 5,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, CommuterPrefGroup)]
-        public float CommuterOCSpawnParameters_Road { get; set; } = VanillaData.CommuterOCSpawnParameters.x;
+        public float CommuterOCSpawnParameters_Road
+        {
+            get =>
+                GetValue(
+                    nameof(CommuterOCSpawnParameters_Road),
+                    VanillaDataFromStorage.m_CommuterOCSpawnParameters.x
+                );
+            set => SetValue(nameof(CommuterOCSpawnParameters_Road), value, ApplyChanges);
+        }
 
         [SettingsUIDisableByCondition(typeof(Setting), nameof(IsRealisticTripsRunning))]
         [SettingsUISection(OCTab, CommuterPrefGroup)]
-        [SettingsUISlider(min = 0, max = 100, step = 5, scalarMultiplier = 100, unit = Unit.kPercentage)]
-        public float CommuterOCSpawnParameters_Train { get; set; } = VanillaData.CommuterOCSpawnParameters.y;
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 5,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
+        public float CommuterOCSpawnParameters_Train
+        {
+            get =>
+                GetValue(
+                    nameof(CommuterOCSpawnParameters_Train),
+                    VanillaDataFromStorage.m_CommuterOCSpawnParameters.y
+                );
+            set => SetValue(nameof(CommuterOCSpawnParameters_Train), value, ApplyChanges);
+        }
 
         [SettingsUIDisableByCondition(typeof(Setting), nameof(IsRealisticTripsRunning))]
-        [SettingsUISlider(min = 0, max = 100, step = 5, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 5,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, CommuterPrefGroup)]
-        public float CommuterOCSpawnParameters_Air { get; set; } = VanillaData.CommuterOCSpawnParameters.z;
+        public float CommuterOCSpawnParameters_Air
+        {
+            get =>
+                GetValue(
+                    nameof(CommuterOCSpawnParameters_Air),
+                    VanillaDataFromStorage.m_CommuterOCSpawnParameters.z
+                );
+            set => SetValue(nameof(CommuterOCSpawnParameters_Air), value, ApplyChanges);
+        }
 
         [SettingsUIDisableByCondition(typeof(Setting), nameof(IsRealisticTripsRunning))]
-        [SettingsUISlider(min = 0, max = 100, step = 5, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 5,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, CommuterPrefGroup)]
-        public float CommuterOCSpawnParameters_Ship { get; set; } = VanillaData.CommuterOCSpawnParameters.w;
+        public float CommuterOCSpawnParameters_Ship
+        {
+            get =>
+                GetValue(
+                    nameof(CommuterOCSpawnParameters_Ship),
+                    VanillaDataFromStorage.m_CommuterOCSpawnParameters.w
+                );
+            set => SetValue(nameof(CommuterOCSpawnParameters_Ship), value, ApplyChanges);
+        }
 
         [SettingsUIDisableByCondition(typeof(Setting), nameof(IsRealisticTripsRunning))]
         [SettingsUISection(OCTab, CommuterPrefGroup)]
-        public string CommuterPrefText => ReVal(CommuterOCSpawnParameters_Road, CommuterOCSpawnParameters_Train, CommuterOCSpawnParameters_Air, CommuterOCSpawnParameters_Ship, true);
+        public string CommuterPrefText =>
+            ReVal(
+                CommuterOCSpawnParameters_Road,
+                CommuterOCSpawnParameters_Train,
+                CommuterOCSpawnParameters_Air,
+                CommuterOCSpawnParameters_Ship,
+                true
+            );
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, TouristPrefGroup)]
-        public float TouristOCSpawnParameters_Road { get; set; } = VanillaData.TouristOCSpawnParameters.x;
+        public float TouristOCSpawnParameters_Road
+        {
+            get =>
+                GetValue(
+                    nameof(TouristOCSpawnParameters_Road),
+                    VanillaDataFromStorage.m_TouristOCSpawnParameters.x
+                );
+            set => SetValue(nameof(TouristOCSpawnParameters_Road), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, TouristPrefGroup)]
-        public float TouristOCSpawnParameters_Train { get; set; } = VanillaData.TouristOCSpawnParameters.y;
+        public float TouristOCSpawnParameters_Train
+        {
+            get =>
+                GetValue(
+                    nameof(TouristOCSpawnParameters_Train),
+                    VanillaDataFromStorage.m_TouristOCSpawnParameters.y
+                );
+            set => SetValue(nameof(TouristOCSpawnParameters_Train), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, TouristPrefGroup)]
-        public float TouristOCSpawnParameters_Air { get; set; } = VanillaData.TouristOCSpawnParameters.z;
+        public float TouristOCSpawnParameters_Air
+        {
+            get =>
+                GetValue(
+                    nameof(TouristOCSpawnParameters_Air),
+                    VanillaDataFromStorage.m_TouristOCSpawnParameters.z
+                );
+            set => SetValue(nameof(TouristOCSpawnParameters_Air), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, TouristPrefGroup)]
-        public float TouristOCSpawnParameters_Ship { get; set; } = VanillaData.TouristOCSpawnParameters.w;
+        public float TouristOCSpawnParameters_Ship
+        {
+            get =>
+                GetValue(
+                    nameof(TouristOCSpawnParameters_Ship),
+                    VanillaDataFromStorage.m_TouristOCSpawnParameters.w
+                );
+            set => SetValue(nameof(TouristOCSpawnParameters_Ship), value, ApplyChanges);
+        }
 
         [SettingsUISection(OCTab, TouristPrefGroup)]
-        public string TouristPrefText => ReVal(TouristOCSpawnParameters_Road, TouristOCSpawnParameters_Train, TouristOCSpawnParameters_Air, TouristOCSpawnParameters_Ship);
+        public string TouristPrefText =>
+            ReVal(
+                TouristOCSpawnParameters_Road,
+                TouristOCSpawnParameters_Train,
+                TouristOCSpawnParameters_Air,
+                TouristOCSpawnParameters_Ship
+            );
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, CitizenPrefGroup)]
-        public float CitizenOCSpawnParameters_Road { get; set; } = VanillaData.CitizenOCSpawnParameters.x;
+        public float CitizenOCSpawnParameters_Road
+        {
+            get =>
+                GetValue(
+                    nameof(CitizenOCSpawnParameters_Road),
+                    VanillaDataFromStorage.m_CitizenOCSpawnParameters.x
+                );
+            set => SetValue(nameof(CitizenOCSpawnParameters_Road), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, CitizenPrefGroup)]
-        public float CitizenOCSpawnParameters_Train { get; set; } = VanillaData.CitizenOCSpawnParameters.y;
+        public float CitizenOCSpawnParameters_Train
+        {
+            get =>
+                GetValue(
+                    nameof(CitizenOCSpawnParameters_Train),
+                    VanillaDataFromStorage.m_CitizenOCSpawnParameters.y
+                );
+            set => SetValue(nameof(CitizenOCSpawnParameters_Train), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, CitizenPrefGroup)]
-        public float CitizenOCSpawnParameters_Air { get; set; } = VanillaData.CitizenOCSpawnParameters.z;
+        public float CitizenOCSpawnParameters_Air
+        {
+            get =>
+                GetValue(
+                    nameof(CitizenOCSpawnParameters_Air),
+                    VanillaDataFromStorage.m_CitizenOCSpawnParameters.z
+                );
+            set => SetValue(nameof(CitizenOCSpawnParameters_Air), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, CitizenPrefGroup)]
-        public float CitizenOCSpawnParameters_Ship { get; set; } = VanillaData.CitizenOCSpawnParameters.w;
+        public float CitizenOCSpawnParameters_Ship
+        {
+            get =>
+                GetValue(
+                    nameof(CitizenOCSpawnParameters_Ship),
+                    VanillaDataFromStorage.m_CitizenOCSpawnParameters.w
+                );
+            set => SetValue(nameof(CitizenOCSpawnParameters_Ship), value, ApplyChanges);
+        }
 
         [SettingsUISection(OCTab, CitizenPrefGroup)]
-        public string CitizenPrefText => ReVal(CitizenOCSpawnParameters_Road, CitizenOCSpawnParameters_Train, CitizenOCSpawnParameters_Air, CitizenOCSpawnParameters_Ship);
+        public string CitizenPrefText =>
+            ReVal(
+                CitizenOCSpawnParameters_Road,
+                CitizenOCSpawnParameters_Train,
+                CitizenOCSpawnParameters_Air,
+                CitizenOCSpawnParameters_Ship
+            );
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, CitizenGroup)]
-        public float TeenSpawnPercentage { get; set; } = VanillaData.TeenSpawnPercentage;
+        public float TeenSpawnPercentage
+        {
+            get =>
+                GetValue(nameof(TeenSpawnPercentage), VanillaDataFromStorage.m_TeenSpawnPercentage);
+            set => SetValue(nameof(TeenSpawnPercentage), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 5000, step = 100, scalarMultiplier = 1, unit = Unit.kInteger)]
+        [SettingsUISlider(
+            min = 0,
+            max = 5000,
+            step = 100,
+            scalarMultiplier = 1,
+            unit = Unit.kInteger
+        )]
         [SettingsUISection(FactorTab, SpawnGroup)]
-        public int FrameIntervalForSpawning_Res { get; set; } = VanillaData.FrameIntervalForSpawning.x;
+        public int FrameIntervalForSpawning_Res
+        {
+            get =>
+                GetValue(
+                    nameof(FrameIntervalForSpawning_Res),
+                    VanillaDataFromStorage.m_FrameIntervalForSpawning.x
+                );
+            set => SetValue(nameof(FrameIntervalForSpawning_Res), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 5000, step = 100, scalarMultiplier = 1, unit = Unit.kInteger)]
+        [SettingsUISlider(
+            min = 0,
+            max = 5000,
+            step = 100,
+            scalarMultiplier = 1,
+            unit = Unit.kInteger
+        )]
         [SettingsUISection(FactorTab, SpawnGroup)]
-        public int FrameIntervalForSpawning_Com { get; set; } = VanillaData.FrameIntervalForSpawning.y;
+        public int FrameIntervalForSpawning_Com
+        {
+            get =>
+                GetValue(
+                    nameof(FrameIntervalForSpawning_Com),
+                    VanillaDataFromStorage.m_FrameIntervalForSpawning.y
+                );
+            set => SetValue(nameof(FrameIntervalForSpawning_Com), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 5000, step = 100, scalarMultiplier = 1, unit = Unit.kInteger)]
+        [SettingsUISlider(
+            min = 0,
+            max = 5000,
+            step = 100,
+            scalarMultiplier = 1,
+            unit = Unit.kInteger
+        )]
         [SettingsUISection(FactorTab, SpawnGroup)]
-        public int FrameIntervalForSpawning_Ind { get; set; } = VanillaData.FrameIntervalForSpawning.z;
+        public int FrameIntervalForSpawning_Ind
+        {
+            get =>
+                GetValue(
+                    nameof(FrameIntervalForSpawning_Ind),
+                    VanillaDataFromStorage.m_FrameIntervalForSpawning.z
+                );
+            set => SetValue(nameof(FrameIntervalForSpawning_Ind), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 1,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(FactorTab, SpawnGroup)]
-        public float HouseholdSpawnSpeedFactor { get; set; } = VanillaData.HouseholdSpawnSpeedFactor;
+        public float HouseholdSpawnSpeedFactor
+        {
+            get =>
+                GetValue(
+                    nameof(HouseholdSpawnSpeedFactor),
+                    VanillaDataFromStorage.m_HouseholdSpawnSpeedFactor
+                );
+            set => SetValue(nameof(HouseholdSpawnSpeedFactor), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 0.1f, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 0.1f,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, EduGroup)]
-        public float NewCitizenEducationParameters_Uneducated { get; set; } = VanillaData.NewCitizenEducationParameters.x;
+        public float NewCitizenEducationParameters_Uneducated
+        {
+            get =>
+                GetValue(
+                    nameof(NewCitizenEducationParameters_Uneducated),
+                    VanillaDataFromStorage.m_NewCitizenEducationParameters.x
+                );
+            set => SetValue(nameof(NewCitizenEducationParameters_Uneducated), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 0.1f, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 0.1f,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, EduGroup)]
-        public float NewCitizenEducationParameters_PoorlyEducated { get; set; } = VanillaData.NewCitizenEducationParameters.y;
+        public float NewCitizenEducationParameters_PoorlyEducated
+        {
+            get =>
+                GetValue(
+                    nameof(NewCitizenEducationParameters_PoorlyEducated),
+                    VanillaDataFromStorage.m_NewCitizenEducationParameters.y
+                );
+            set =>
+                SetValue(nameof(NewCitizenEducationParameters_PoorlyEducated), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 0.1f, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 0.1f,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, EduGroup)]
-        public float NewCitizenEducationParameters_Educated { get; set; } = VanillaData.NewCitizenEducationParameters.z;
+        public float NewCitizenEducationParameters_Educated
+        {
+            get =>
+                GetValue(
+                    nameof(NewCitizenEducationParameters_Educated),
+                    VanillaDataFromStorage.m_NewCitizenEducationParameters.z
+                );
+            set => SetValue(nameof(NewCitizenEducationParameters_Educated), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 0.1f, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 0.1f,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, EduGroup)]
-        public float NewCitizenEducationParameters_WellEducated { get; set; } = VanillaData.NewCitizenEducationParameters.w;
+        public float NewCitizenEducationParameters_WellEducated
+        {
+            get =>
+                GetValue(
+                    nameof(NewCitizenEducationParameters_WellEducated),
+                    VanillaDataFromStorage.m_NewCitizenEducationParameters.w
+                );
+            set =>
+                SetValue(nameof(NewCitizenEducationParameters_WellEducated), value, ApplyChanges);
+        }
 
-        [SettingsUISlider(min = 0, max = 100, step = 0.1f, scalarMultiplier = 100, unit = Unit.kPercentage)]
+        [SettingsUISlider(
+            min = 0,
+            max = 100,
+            step = 0.1f,
+            scalarMultiplier = 100,
+            unit = Unit.kPercentage
+        )]
         [SettingsUISection(OCTab, EduGroup)]
-        public float NewCitizenEducationParameters_HighlyEducated { get; set; } = VanillaData.NewCitizenEducationParameters_HighlyRaw;
+        public float NewCitizenEducationParameters_HighlyEducated
+        {
+            get =>
+                GetValue(
+                    nameof(NewCitizenEducationParameters_HighlyEducated),
+                    1
+                        - VanillaDataFromStorage.m_NewCitizenEducationParameters.x
+                        - VanillaDataFromStorage.m_NewCitizenEducationParameters.y
+                        - VanillaDataFromStorage.m_NewCitizenEducationParameters.z
+                        - VanillaDataFromStorage.m_NewCitizenEducationParameters.w
+                );
+            set =>
+                SetValue(nameof(NewCitizenEducationParameters_HighlyEducated), value, ApplyChanges);
+        }
 
         [SettingsUISection(OCTab, EduGroup)]
-        public string EducationParamText1 => ReValEdu(NewCitizenEducationParameters_Uneducated, NewCitizenEducationParameters_PoorlyEducated, NewCitizenEducationParameters_Educated, NewCitizenEducationParameters_WellEducated, NewCitizenEducationParameters_HighlyEducated).Item1;
+        public string EducationParamText1 =>
+            ReValEdu(
+                NewCitizenEducationParameters_Uneducated,
+                NewCitizenEducationParameters_PoorlyEducated,
+                NewCitizenEducationParameters_Educated,
+                NewCitizenEducationParameters_WellEducated,
+                NewCitizenEducationParameters_HighlyEducated
+            ).Item1;
 
         [SettingsUISection(OCTab, EduGroup)]
-        public string EducationParamText2 => ReValEdu(NewCitizenEducationParameters_Uneducated, NewCitizenEducationParameters_PoorlyEducated, NewCitizenEducationParameters_Educated, NewCitizenEducationParameters_WellEducated, NewCitizenEducationParameters_HighlyEducated).Item2;
+        public string EducationParamText2 =>
+            ReValEdu(
+                NewCitizenEducationParameters_Uneducated,
+                NewCitizenEducationParameters_PoorlyEducated,
+                NewCitizenEducationParameters_Educated,
+                NewCitizenEducationParameters_WellEducated,
+                NewCitizenEducationParameters_HighlyEducated
+            ).Item2;
 
         [SettingsUIHidden]
         [Exclude]
@@ -279,54 +889,73 @@ namespace DemandMasterControl
 
         public override void SetDefaults()
         {
-            MinimumHappiness = VanillaData.MinimumHappiness;
-            NeutralHappiness = VanillaData.NeutralHappiness;
-            HappinessEffect = VanillaData.HappinessEffect;
-            AvailableWorkplaceEffect = VanillaData.AvailableWorkplaceEffect;
-            NeutralUnemployment = VanillaData.NeutralUnemployment;
-            NeutralAvailableWorkplacePercentage = VanillaData.NeutralAvailableWorkplacePercentage;
-            TaxEffect = VanillaData.TaxEffect;
-            StudentEffect = VanillaData.StudentEffect;
-            HomelessEffect = VanillaData.HomelessEffect;
-            NeutralHomelessness = VanillaData.NeutralHomelessness;
-            FreeResidentialRequirement_Low = VanillaData.FreeResidentialRequirement.x;
-            FreeResidentialRequirement_Medium = VanillaData.FreeResidentialRequirement.y;
-            FreeResidentialRequirement_High = VanillaData.FreeResidentialRequirement.z;
-            //FreeCommercialProportion = VanillaData.FreeCommercialProportion;
-            //FreeIndustrialProportion = VanillaData.FreeIndustrialProportion;
-            //CommercialStorageMinimum = VanillaData.CommercialStorageMinimum;
-            //CommercialStorageEffect = VanillaData.CommercialStorageEffect;
-            CommercialBaseDemand = VanillaData.CommercialBaseDemand;
-            //IndustrialStorageMinimum = VanillaData.IndustrialStorageMinimum;
-            //IndustrialStorageEffect = VanillaData.IndustrialStorageEffect;
-            IndustrialBaseDemand = VanillaData.IndustrialBaseDemand;
-            ExtractorBaseDemand = VanillaData.ExtractorBaseDemand;
-            //StorageDemandMultiplier = VanillaData.StorageDemandMultiplier;
-            CommuterWorkerRatioLimit = VanillaData.CommuterWorkerRatioLimit;
-            CommuterSlowSpawnFactor = VanillaData.CommuterSlowSpawnFactor;
-            CommuterOCSpawnParameters_Road = VanillaData.CommuterOCSpawnParameters.x;
-            CommuterOCSpawnParameters_Train = VanillaData.CommuterOCSpawnParameters.y;
-            CommuterOCSpawnParameters_Air = VanillaData.CommuterOCSpawnParameters.z;
-            CommuterOCSpawnParameters_Ship = VanillaData.CommuterOCSpawnParameters.w;
-            TouristOCSpawnParameters_Road = VanillaData.TouristOCSpawnParameters.x;
-            TouristOCSpawnParameters_Train = VanillaData.TouristOCSpawnParameters.y;
-            TouristOCSpawnParameters_Air = VanillaData.TouristOCSpawnParameters.z;
-            TouristOCSpawnParameters_Ship = VanillaData.TouristOCSpawnParameters.w;
-            CitizenOCSpawnParameters_Road = VanillaData.CitizenOCSpawnParameters.x;
-            CitizenOCSpawnParameters_Train = VanillaData.CitizenOCSpawnParameters.y;
-            CitizenOCSpawnParameters_Air = VanillaData.CitizenOCSpawnParameters.z;
-            CitizenOCSpawnParameters_Ship = VanillaData.CitizenOCSpawnParameters.w;
-            TeenSpawnPercentage = VanillaData.TeenSpawnPercentage;
-            FrameIntervalForSpawning_Res = VanillaData.FrameIntervalForSpawning.x;
-            FrameIntervalForSpawning_Com = VanillaData.FrameIntervalForSpawning.y;
-            FrameIntervalForSpawning_Ind = VanillaData.FrameIntervalForSpawning.z;
-            HouseholdSpawnSpeedFactor = VanillaData.HouseholdSpawnSpeedFactor;
-            NewCitizenEducationParameters_Uneducated = VanillaData.NewCitizenEducationParameters.x;
-            NewCitizenEducationParameters_PoorlyEducated = VanillaData.NewCitizenEducationParameters.y;
-            NewCitizenEducationParameters_Educated = VanillaData.NewCitizenEducationParameters.z;
-            NewCitizenEducationParameters_WellEducated = VanillaData.NewCitizenEducationParameters.w;
-            NewCitizenEducationParameters_HighlyEducated = VanillaData.NewCitizenEducationParameters_HighlyRaw;
-            HotelRoomPercentRequirement = VanillaData.HotelRoomPercentRequirement;
+            Changes = false;
+            MinimumHappiness = VanillaDataFromStorage.m_MinimumHappiness;
+            NeutralHappiness = VanillaDataFromStorage.m_NeutralHappiness;
+            HappinessEffect = VanillaDataFromStorage.m_HappinessEffect;
+            AvailableWorkplaceEffect = VanillaDataFromStorage.m_AvailableWorkplaceEffect;
+            NeutralUnemployment = VanillaDataFromStorage.m_NeutralUnemployment;
+            NeutralAvailableWorkplacePercentage =
+                VanillaDataFromStorage.m_NeutralAvailableWorkplacePercentage;
+            TaxEffect_x = VanillaDataFromStorage.m_TaxEffect.x;
+            TaxEffect_y = VanillaDataFromStorage.m_TaxEffect.y;
+            TaxEffect_z = VanillaDataFromStorage.m_TaxEffect.z;
+            StudentEffect = VanillaDataFromStorage.m_StudentEffect;
+            HomelessEffect = VanillaDataFromStorage.m_HomelessEffect;
+            NeutralHomelessness = VanillaDataFromStorage.m_NeutralHomelessness;
+            FreeResidentialRequirement_Low = VanillaDataFromStorage.m_FreeResidentialRequirement.x;
+            FreeResidentialRequirement_Medium = VanillaDataFromStorage
+                .m_FreeResidentialRequirement
+                .y;
+            FreeResidentialRequirement_High = VanillaDataFromStorage.m_FreeResidentialRequirement.z;
+            //FreeCommercialProportion = VanillaData.m_FreeCommercialProportion;
+            //FreeIndustrialProportion = VanillaData.m_FreeIndustrialProportion;
+            //CommercialStorageMinimum = VanillaData.m_CommercialStorageMinimum;
+            //CommercialStorageEffect = VanillaData.m_CommercialStorageEffect;
+            CommercialBaseDemand = VanillaDataFromStorage.m_CommercialBaseDemand;
+            //IndustrialStorageMinimum = VanillaData.m_IndustrialStorageMinimum;
+            //IndustrialStorageEffect = VanillaData.m_IndustrialStorageEffect;
+            IndustrialBaseDemand = VanillaDataFromStorage.m_IndustrialBaseDemand;
+            ExtractorBaseDemand = VanillaDataFromStorage.m_ExtractorBaseDemand;
+            //StorageDemandMultiplier = VanillaData.m_StorageDemandMultiplier;
+            CommuterWorkerRatioLimit = VanillaDataFromStorage.m_CommuterWorkerRatioLimit;
+            CommuterSlowSpawnFactor = VanillaDataFromStorage.m_CommuterSlowSpawnFactor;
+            CommuterOCSpawnParameters_Road = VanillaDataFromStorage.m_CommuterOCSpawnParameters.x;
+            CommuterOCSpawnParameters_Train = VanillaDataFromStorage.m_CommuterOCSpawnParameters.y;
+            CommuterOCSpawnParameters_Air = VanillaDataFromStorage.m_CommuterOCSpawnParameters.z;
+            CommuterOCSpawnParameters_Ship = VanillaDataFromStorage.m_CommuterOCSpawnParameters.w;
+            TouristOCSpawnParameters_Road = VanillaDataFromStorage.m_TouristOCSpawnParameters.x;
+            TouristOCSpawnParameters_Train = VanillaDataFromStorage.m_TouristOCSpawnParameters.y;
+            TouristOCSpawnParameters_Air = VanillaDataFromStorage.m_TouristOCSpawnParameters.z;
+            TouristOCSpawnParameters_Ship = VanillaDataFromStorage.m_TouristOCSpawnParameters.w;
+            CitizenOCSpawnParameters_Road = VanillaDataFromStorage.m_CitizenOCSpawnParameters.x;
+            CitizenOCSpawnParameters_Train = VanillaDataFromStorage.m_CitizenOCSpawnParameters.y;
+            CitizenOCSpawnParameters_Air = VanillaDataFromStorage.m_CitizenOCSpawnParameters.z;
+            CitizenOCSpawnParameters_Ship = VanillaDataFromStorage.m_CitizenOCSpawnParameters.w;
+            TeenSpawnPercentage = VanillaDataFromStorage.m_TeenSpawnPercentage;
+            FrameIntervalForSpawning_Res = VanillaDataFromStorage.m_FrameIntervalForSpawning.x;
+            FrameIntervalForSpawning_Com = VanillaDataFromStorage.m_FrameIntervalForSpawning.y;
+            FrameIntervalForSpawning_Ind = VanillaDataFromStorage.m_FrameIntervalForSpawning.z;
+            HouseholdSpawnSpeedFactor = VanillaDataFromStorage.m_HouseholdSpawnSpeedFactor;
+            NewCitizenEducationParameters_Uneducated = VanillaDataFromStorage
+                .m_NewCitizenEducationParameters
+                .x;
+            NewCitizenEducationParameters_PoorlyEducated = VanillaDataFromStorage
+                .m_NewCitizenEducationParameters
+                .y;
+            NewCitizenEducationParameters_Educated = VanillaDataFromStorage
+                .m_NewCitizenEducationParameters
+                .z;
+            NewCitizenEducationParameters_WellEducated = VanillaDataFromStorage
+                .m_NewCitizenEducationParameters
+                .w;
+            NewCitizenEducationParameters_HighlyEducated =
+                1
+                - VanillaDataFromStorage.m_NewCitizenEducationParameters.x
+                - VanillaDataFromStorage.m_NewCitizenEducationParameters.y
+                - VanillaDataFromStorage.m_NewCitizenEducationParameters.z
+                - VanillaDataFromStorage.m_NewCitizenEducationParameters.w;
+            HotelRoomPercentRequirement = VanillaDataFromStorage.m_HotelRoomPercentRequirement;
         }
 
         public (string, string) ReValEdu(float l0, float l1, float l2, float l3, float l4)
@@ -421,14 +1050,20 @@ namespace DemandMasterControl
                     {
                         text2 += ", ";
                     }
-                    text2 += $"Highly Educated: {Math.Round(value,3)}%";
+                    text2 += $"Highly Educated: {Math.Round(value, 3)}%";
                     //currentTotal += value;
                 }
             }
             return (text1, text2);
         }
 
-        public string ReVal(float l0, float l1, float l2, float l3, bool checkRealisticTrips = false)
+        public string ReVal(
+            float l0,
+            float l1,
+            float l2,
+            float l3,
+            bool checkRealisticTrips = false
+        )
         {
             if (IsRealisticTripsRunning && checkRealisticTrips)
             {
@@ -541,9 +1176,20 @@ namespace DemandMasterControl
             }
         }
 
+        [Exclude]
+        public bool Changes = false;
+
+        public void ApplyChanges()
+        {
+            Changes = true;
+        }
+
         [SettingsUIButton]
         [SettingsUISection(AboutTab, InfoGroup)]
-        public bool Reset { set { SetDefaults(); } }
+        public bool Reset
+        {
+            set { SetDefaults(); }
+        }
 
         [SettingsUISection(AboutTab, InfoGroup)]
         [SettingsUIMultilineText]

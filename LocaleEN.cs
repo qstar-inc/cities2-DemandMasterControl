@@ -464,7 +464,7 @@ namespace DemandMasterControl
                 },
                 {
                     m_Setting.GetOptionDescLocaleID(nameof(Setting.HouseholdSpawnSpeedFactor)),
-                    $"A rate which is used to determine the amount of household required to spawn.\r\n- Lower value = More Frequency {Default($"{VanillaDataFromStorage.m_HouseholdSpawnSpeedFactor * 100}%")}"
+                    $"The rate which is used to determine the amount of household required to spawn.\r\n- Higher value = More Chances of Household Spawning {Default($"{VanillaDataFromStorage.m_HouseholdSpawnSpeedFactor}")}"
                 },
                 {
                     m_Setting.GetOptionLabelLocaleID(
@@ -536,6 +536,8 @@ namespace DemandMasterControl
                 },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EducationParamText2)), "" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.EducationParamText2)), "" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModState)), "Mod State" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModState)), "" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.NameText)), "Mod Name" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.NameText)), "" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.VersionText)), "Mod Version" },

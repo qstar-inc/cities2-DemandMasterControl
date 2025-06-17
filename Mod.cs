@@ -24,6 +24,7 @@ namespace DemandMasterControl
             .GetLogger($"{nameof(DemandMasterControl)}")
             .SetShowsErrorsInUI(false);
         public static Setting m_Setting;
+        public static string State = "";
 
         public void OnLoad(UpdateSystem updateSystem)
         {

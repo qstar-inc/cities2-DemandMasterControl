@@ -33,12 +33,12 @@ Demand Master Control gives the player full control over how the city grows by a
 	<Screenshot Value="Properties/Screenshot02.png" />
 	<Tag Value="Code Mod" />
 	<ForumLink Value="" />
-	<ModVersion Value="2.0.3" />
-	<GameVersion Value="1.3.3f1" />
+	<ModVersion Value="2.0.5" />
+	<GameVersion Value="1.3.3*" />
 	<Dependency Id="" />
 	<ChangeLog>
-- Compatibility update for 1.3.3f1.
-- Vanilla Data is now dynamically collected to prevent accidental overwrite in case of game update.
+- Added more checks to detect missing (0 value) data.
+- Added 'Mod State' checker on the About tab of OptionsUI.
 	</ChangeLog>
 	<ExternalLink Type="discord" Url="https://discord.com/channels/1024242828114673724/1270630977483444265" />
 	<ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-DemandMasterControl" />

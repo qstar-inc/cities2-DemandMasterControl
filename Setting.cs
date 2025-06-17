@@ -742,10 +742,10 @@ namespace DemandMasterControl
 
         [SettingsUISlider(
             min = 0,
-            max = 100,
-            step = 1,
-            scalarMultiplier = 100,
-            unit = Unit.kPercentage
+            max = 10,
+            step = 0.5f,
+            scalarMultiplier = 1,
+            unit = Unit.kFloatTwoFractions
         )]
         [SettingsUISection(FactorTab, SpawnGroup)]
         public float HouseholdSpawnSpeedFactor
@@ -755,7 +755,8 @@ namespace DemandMasterControl
                     nameof(HouseholdSpawnSpeedFactor),
                     VanillaDataFromStorage.m_HouseholdSpawnSpeedFactor
                 );
-            set => SetValue(nameof(HouseholdSpawnSpeedFactor), value, ApplyChanges);
+            set =>
+                SetValue(nameof(HouseholdSpawnSpeedFactor), Math.Max(value, 0.0001f), ApplyChanges);
         }
 
         [SettingsUISlider(
@@ -1143,6 +1144,9 @@ namespace DemandMasterControl
             }
             return text.Trim();
         }
+
+        [SettingsUISection(AboutTab, InfoGroup)]
+        public string ModState => Mod.State;
 
         [SettingsUISection(AboutTab, InfoGroup)]
         public string NameText => Mod.Name;

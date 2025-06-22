@@ -279,6 +279,19 @@ namespace DemandMasterControl
                 //{ m_Setting.GetOptionLabelLocaleID(nameof(Setting.StorageDemandMultiplier)), "Storage Demand Multiplier" },
                 //{ m_Setting.GetOptionDescLocaleID(nameof(Setting.StorageDemandMultiplier)), "" },
                 {
+                    m_Setting.GetOptionLabelLocaleID(nameof(Setting.MaxDemand)),
+                    "Maximum Demands"
+                },
+                {
+                    m_Setting.GetOptionDescLocaleID(nameof(Setting.MaxDemand)),
+                    $"Set all demand values to maximum."
+                },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetDemand)), "Reset Demand" },
+                {
+                    m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetDemand)),
+                    $"Reset demands to vanilla values."
+                },
+                {
                     m_Setting.GetOptionLabelLocaleID(nameof(Setting.CommuterWorkerRatioLimit)),
                     "Commuter Worker Ratio Limit"
                 },

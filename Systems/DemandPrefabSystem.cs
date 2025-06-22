@@ -19,27 +19,29 @@ namespace DemandMasterControl.Systems
 
         protected override void OnUpdate()
         {
-            EntityQuery demandQuery = World
-                .DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<VanillaDataSystem>()
-                .demandQuery;
             Setting settings = Mod.m_Setting;
             int pass = 0;
             if (settings.Changes)
             {
                 try
                 {
+                    EntityQuery demandQuery = SystemAPI
+                        .QueryBuilder()
+                        .WithAll<DemandParameterData>()
+                        .Build();
                     DemandParameterData data = demandQuery.GetSingleton<DemandParameterData>();
                     Entity entity = demandQuery.GetSingletonEntity();
-                    if (
+                    while (
                         setting.CommuterSlowSpawnFactor == 0
                         || VanillaDataStorage.VanillaData.m_CommuterSlowSpawnFactor == 0
+                        || pass > 3
                     )
                     {
-                        pass++;
-                        World.GetOrCreateSystemManaged<VanillaDataSystem>();
-                    }
-                    if (pass > 3)
-                    {
+                        //    pass++;
+                        //    //World.GetOrCreateSystemManaged<VanillaDataSystem>().CollectVanillaData();
+                        //}
+                        //if (pass > 3)
+                        //{
                         Enabled = false;
                         Mod.log.Info("DMC: Disabling systems because of invalid values");
                         return;

@@ -6,7 +6,9 @@ using DemandMasterControl.Systems;
 using Game.Modding;
 using Game.Settings;
 using Game.UI;
+using Unity.Entities;
 using UnityEngine.Device;
+using UnityEngine.InputSystem;
 
 namespace DemandMasterControl
 {
@@ -53,7 +55,19 @@ namespace DemandMasterControl
 
         private readonly Dictionary<string, object> _values = new();
 
-        private T GetValue<T>(string propertyName, T defaultValue = default)
+        //[Exclude]
+        //public bool vanillaDataSet { get; set; } = false;
+
+        //public void ReloadFromVanillaData()
+        //{
+        //    if (!vanillaDataSet)
+        //    {
+        //        VanillaDataFromStorage = VanillaDataStorage.VanillaData;
+        //        vanillaDataSet = true;
+        //    }
+        //}
+
+        private T GetValue<T>(string propertyName, Func<T> defaultProvider)
         {
             if (_values.TryGetValue(propertyName, out var value))
             {
@@ -68,6 +82,8 @@ namespace DemandMasterControl
                     );
                 }
             }
+            var defaultValue = defaultProvider();
+            _values[propertyName] = defaultValue;
             return defaultValue;
         }
 
@@ -78,7 +94,7 @@ namespace DemandMasterControl
         }
 
         [Exclude]
-        public VanillaData VanillaDataFromStorage = new();
+        public VanillaData VanillaDataFromStorage = VanillaDataStorage.VanillaData;
 
         public const string FactorTab = "Factors";
         public const string HappinessGroup = "Happiness";
@@ -90,6 +106,7 @@ namespace DemandMasterControl
         public const string ResiDemandGroup = "Residential";
         public const string CommDemandGroup = "Commercial";
         public const string IndDemandGroup = "Industrial";
+        public const string DemandButtonsGroup = "Buttons";
 
         public const string OCTab = "Outside Connections";
         public const string CommuterGroup = "Commuters";
@@ -114,7 +131,8 @@ namespace DemandMasterControl
         [SettingsUISection(FactorTab, HappinessGroup)]
         public int MinimumHappiness
         {
-            get => GetValue(nameof(MinimumHappiness), VanillaDataFromStorage.m_MinimumHappiness);
+            get =>
+                GetValue(nameof(MinimumHappiness), () => VanillaDataFromStorage.m_MinimumHappiness);
             set => SetValue(nameof(MinimumHappiness), value, ApplyChanges);
         }
 
@@ -128,7 +146,8 @@ namespace DemandMasterControl
         [SettingsUISection(FactorTab, HappinessGroup)]
         public int NeutralHappiness
         {
-            get => GetValue(nameof(NeutralHappiness), VanillaDataFromStorage.m_NeutralHappiness);
+            get =>
+                GetValue(nameof(NeutralHappiness), () => VanillaDataFromStorage.m_NeutralHappiness);
             set => SetValue(nameof(NeutralHappiness), value, ApplyChanges);
         }
 
@@ -136,7 +155,8 @@ namespace DemandMasterControl
         [SettingsUISection(FactorTab, HappinessGroup)]
         public float HappinessEffect
         {
-            get => GetValue(nameof(HappinessEffect), VanillaDataFromStorage.m_HappinessEffect);
+            get =>
+                GetValue(nameof(HappinessEffect), () => VanillaDataFromStorage.m_HappinessEffect);
             set => SetValue(nameof(HappinessEffect), value, ApplyChanges);
         }
 
@@ -150,7 +170,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(AvailableWorkplaceEffect),
-                    VanillaDataFromStorage.m_AvailableWorkplaceEffect
+                    () => VanillaDataFromStorage.m_AvailableWorkplaceEffect
                 );
             set => SetValue(nameof(AvailableWorkplaceEffect), value, ApplyChanges);
         }
@@ -166,7 +186,10 @@ namespace DemandMasterControl
         public float NeutralUnemployment
         {
             get =>
-                GetValue(nameof(NeutralUnemployment), VanillaDataFromStorage.m_NeutralUnemployment);
+                GetValue(
+                    nameof(NeutralUnemployment),
+                    () => VanillaDataFromStorage.m_NeutralUnemployment
+                );
             set => SetValue(nameof(NeutralUnemployment), value, ApplyChanges);
         }
 
@@ -183,7 +206,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(NeutralAvailableWorkplacePercentage),
-                    VanillaDataFromStorage.m_NeutralAvailableWorkplacePercentage
+                    () => VanillaDataFromStorage.m_NeutralAvailableWorkplacePercentage
                 );
             set => SetValue(nameof(NeutralAvailableWorkplacePercentage), value, ApplyChanges);
         }
@@ -195,7 +218,7 @@ namespace DemandMasterControl
         [SettingsUISection(FactorTab, OthersGroup)]
         public float TaxEffect_x
         {
-            get => GetValue(nameof(TaxEffect_x), VanillaDataFromStorage.m_TaxEffect.x);
+            get => GetValue(nameof(TaxEffect_x), () => VanillaDataFromStorage.m_TaxEffect.x);
             set => SetValue(nameof(TaxEffect_x), value, ApplyChanges);
         }
 
@@ -203,7 +226,7 @@ namespace DemandMasterControl
         [SettingsUISection(FactorTab, OthersGroup)]
         public float TaxEffect_y
         {
-            get => GetValue(nameof(TaxEffect_y), VanillaDataFromStorage.m_TaxEffect.y);
+            get => GetValue(nameof(TaxEffect_y), () => VanillaDataFromStorage.m_TaxEffect.y);
             set => SetValue(nameof(TaxEffect_y), value, ApplyChanges);
         }
 
@@ -211,7 +234,7 @@ namespace DemandMasterControl
         [SettingsUISection(FactorTab, OthersGroup)]
         public float TaxEffect_z
         {
-            get => GetValue(nameof(TaxEffect_z), VanillaDataFromStorage.m_TaxEffect.z);
+            get => GetValue(nameof(TaxEffect_z), () => VanillaDataFromStorage.m_TaxEffect.z);
             set => SetValue(nameof(TaxEffect_z), value, ApplyChanges);
         }
 
@@ -219,7 +242,7 @@ namespace DemandMasterControl
         [SettingsUISection(FactorTab, OthersGroup)]
         public float StudentEffect
         {
-            get => GetValue(nameof(StudentEffect), VanillaDataFromStorage.m_StudentEffect);
+            get => GetValue(nameof(StudentEffect), () => VanillaDataFromStorage.m_StudentEffect);
             set => SetValue(nameof(StudentEffect), value, ApplyChanges);
         }
 
@@ -227,7 +250,7 @@ namespace DemandMasterControl
         [SettingsUISection(FactorTab, OthersGroup)]
         public float HomelessEffect
         {
-            get => GetValue(nameof(HomelessEffect), VanillaDataFromStorage.m_HomelessEffect);
+            get => GetValue(nameof(HomelessEffect), () => VanillaDataFromStorage.m_HomelessEffect);
             set => SetValue(nameof(HomelessEffect), value, ApplyChanges);
         }
 
@@ -242,7 +265,10 @@ namespace DemandMasterControl
         public int NeutralHomelessness
         {
             get =>
-                GetValue(nameof(NeutralHomelessness), VanillaDataFromStorage.m_NeutralHomelessness);
+                GetValue(
+                    nameof(NeutralHomelessness),
+                    () => VanillaDataFromStorage.m_NeutralHomelessness
+                );
             set => SetValue(nameof(NeutralHomelessness), value, ApplyChanges);
         }
 
@@ -259,7 +285,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(FreeResidentialRequirement_Low),
-                    VanillaDataFromStorage.m_FreeResidentialRequirement.x
+                    () => VanillaDataFromStorage.m_FreeResidentialRequirement.x
                 );
             set => SetValue(nameof(FreeResidentialRequirement_Low), value, ApplyChanges);
         }
@@ -277,7 +303,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(FreeResidentialRequirement_Medium),
-                    VanillaDataFromStorage.m_FreeResidentialRequirement.y
+                    () => VanillaDataFromStorage.m_FreeResidentialRequirement.y
                 );
             set => SetValue(nameof(FreeResidentialRequirement_Medium), value, ApplyChanges);
         }
@@ -295,7 +321,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(FreeResidentialRequirement_High),
-                    VanillaDataFromStorage.m_FreeResidentialRequirement.z
+                    () => VanillaDataFromStorage.m_FreeResidentialRequirement.z
                 );
             set => SetValue(nameof(FreeResidentialRequirement_High), value, ApplyChanges);
         }
@@ -313,7 +339,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CommercialBaseDemand),
-                    VanillaDataFromStorage.m_CommercialBaseDemand
+                    () => VanillaDataFromStorage.m_CommercialBaseDemand
                 );
             set => SetValue(nameof(CommercialBaseDemand), value, ApplyChanges);
         }
@@ -343,7 +369,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(HotelRoomPercentRequirement),
-                    VanillaDataFromStorage.m_HotelRoomPercentRequirement
+                    () => VanillaDataFromStorage.m_HotelRoomPercentRequirement
                 );
             set => SetValue(nameof(HotelRoomPercentRequirement), value, ApplyChanges);
         }
@@ -361,7 +387,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(IndustrialBaseDemand),
-                    VanillaDataFromStorage.m_IndustrialBaseDemand
+                    () => VanillaDataFromStorage.m_IndustrialBaseDemand
                 );
             set => SetValue(nameof(IndustrialBaseDemand), value, ApplyChanges);
         }
@@ -389,13 +415,58 @@ namespace DemandMasterControl
         public float ExtractorBaseDemand
         {
             get =>
-                GetValue(nameof(ExtractorBaseDemand), VanillaDataFromStorage.m_ExtractorBaseDemand);
+                GetValue(
+                    nameof(ExtractorBaseDemand),
+                    () => VanillaDataFromStorage.m_ExtractorBaseDemand
+                );
             set => SetValue(nameof(ExtractorBaseDemand), value, ApplyChanges);
         }
 
         //[SettingsUISlider(min = 0, max = 1, step = 0.00001f, scalarMultiplier = 10000, unit = Unit.kFloatTwoFractions)]
         //[SettingsUISection(DemandTab, IndDemandGroup)]
         //public float StorageDemandMultiplier { get; set; } = VanillaData.StorageDemandMultiplier;
+
+        [SettingsUIButton]
+        [SettingsUIButtonGroup("DemandGroup")]
+        [SettingsUISection(DemandTab, DemandButtonsGroup)]
+        public bool MaxDemand
+        {
+            set
+            {
+                FreeResidentialRequirement_Low = 100;
+                FreeResidentialRequirement_Medium = 100;
+                FreeResidentialRequirement_High = 100;
+                CommercialBaseDemand = 50;
+                HotelRoomPercentRequirement = 50;
+                IndustrialBaseDemand = 50;
+                ExtractorBaseDemand = 50;
+                ApplyChanges();
+            }
+        }
+
+        [SettingsUIButton]
+        [SettingsUIButtonGroup("DemandGroup")]
+        [SettingsUISection(DemandTab, DemandButtonsGroup)]
+        public bool ResetDemand
+        {
+            set
+            {
+                FreeResidentialRequirement_Low = VanillaDataFromStorage
+                    .m_FreeResidentialRequirement
+                    .x;
+                FreeResidentialRequirement_Medium = VanillaDataFromStorage
+                    .m_FreeResidentialRequirement
+                    .y;
+                FreeResidentialRequirement_High = VanillaDataFromStorage
+                    .m_FreeResidentialRequirement
+                    .z;
+                CommercialBaseDemand = VanillaDataFromStorage.m_CommercialBaseDemand;
+                HotelRoomPercentRequirement = VanillaDataFromStorage.m_HotelRoomPercentRequirement;
+                IndustrialBaseDemand = VanillaDataFromStorage.m_IndustrialBaseDemand;
+                ExtractorBaseDemand = VanillaDataFromStorage.m_ExtractorBaseDemand;
+                ApplyChanges();
+            }
+        }
 
         [SettingsUIDisableByCondition(typeof(Setting), nameof(IsRealisticTripsRunning))]
         [SettingsUISlider(min = 1, max = 20, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
@@ -405,7 +476,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CommuterWorkerRatioLimit),
-                    VanillaDataFromStorage.m_CommuterWorkerRatioLimit
+                    () => VanillaDataFromStorage.m_CommuterWorkerRatioLimit
                 );
             set => SetValue(nameof(CommuterWorkerRatioLimit), value, ApplyChanges);
         }
@@ -417,7 +488,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CommuterSlowSpawnFactor),
-                    VanillaDataFromStorage.m_CommuterSlowSpawnFactor
+                    () => VanillaDataFromStorage.m_CommuterSlowSpawnFactor
                 );
             set => SetValue(nameof(CommuterSlowSpawnFactor), value, ApplyChanges);
         }
@@ -436,7 +507,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CommuterOCSpawnParameters_Road),
-                    VanillaDataFromStorage.m_CommuterOCSpawnParameters.x
+                    () => VanillaDataFromStorage.m_CommuterOCSpawnParameters.x
                 );
             set => SetValue(nameof(CommuterOCSpawnParameters_Road), value, ApplyChanges);
         }
@@ -455,7 +526,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CommuterOCSpawnParameters_Train),
-                    VanillaDataFromStorage.m_CommuterOCSpawnParameters.y
+                    () => VanillaDataFromStorage.m_CommuterOCSpawnParameters.y
                 );
             set => SetValue(nameof(CommuterOCSpawnParameters_Train), value, ApplyChanges);
         }
@@ -474,7 +545,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CommuterOCSpawnParameters_Air),
-                    VanillaDataFromStorage.m_CommuterOCSpawnParameters.z
+                    () => VanillaDataFromStorage.m_CommuterOCSpawnParameters.z
                 );
             set => SetValue(nameof(CommuterOCSpawnParameters_Air), value, ApplyChanges);
         }
@@ -493,7 +564,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CommuterOCSpawnParameters_Ship),
-                    VanillaDataFromStorage.m_CommuterOCSpawnParameters.w
+                    () => VanillaDataFromStorage.m_CommuterOCSpawnParameters.w
                 );
             set => SetValue(nameof(CommuterOCSpawnParameters_Ship), value, ApplyChanges);
         }
@@ -522,7 +593,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(TouristOCSpawnParameters_Road),
-                    VanillaDataFromStorage.m_TouristOCSpawnParameters.x
+                    () => VanillaDataFromStorage.m_TouristOCSpawnParameters.x
                 );
             set => SetValue(nameof(TouristOCSpawnParameters_Road), value, ApplyChanges);
         }
@@ -540,7 +611,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(TouristOCSpawnParameters_Train),
-                    VanillaDataFromStorage.m_TouristOCSpawnParameters.y
+                    () => VanillaDataFromStorage.m_TouristOCSpawnParameters.y
                 );
             set => SetValue(nameof(TouristOCSpawnParameters_Train), value, ApplyChanges);
         }
@@ -558,7 +629,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(TouristOCSpawnParameters_Air),
-                    VanillaDataFromStorage.m_TouristOCSpawnParameters.z
+                    () => VanillaDataFromStorage.m_TouristOCSpawnParameters.z
                 );
             set => SetValue(nameof(TouristOCSpawnParameters_Air), value, ApplyChanges);
         }
@@ -576,7 +647,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(TouristOCSpawnParameters_Ship),
-                    VanillaDataFromStorage.m_TouristOCSpawnParameters.w
+                    () => VanillaDataFromStorage.m_TouristOCSpawnParameters.w
                 );
             set => SetValue(nameof(TouristOCSpawnParameters_Ship), value, ApplyChanges);
         }
@@ -603,7 +674,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CitizenOCSpawnParameters_Road),
-                    VanillaDataFromStorage.m_CitizenOCSpawnParameters.x
+                    () => VanillaDataFromStorage.m_CitizenOCSpawnParameters.x
                 );
             set => SetValue(nameof(CitizenOCSpawnParameters_Road), value, ApplyChanges);
         }
@@ -621,7 +692,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CitizenOCSpawnParameters_Train),
-                    VanillaDataFromStorage.m_CitizenOCSpawnParameters.y
+                    () => VanillaDataFromStorage.m_CitizenOCSpawnParameters.y
                 );
             set => SetValue(nameof(CitizenOCSpawnParameters_Train), value, ApplyChanges);
         }
@@ -639,7 +710,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CitizenOCSpawnParameters_Air),
-                    VanillaDataFromStorage.m_CitizenOCSpawnParameters.z
+                    () => VanillaDataFromStorage.m_CitizenOCSpawnParameters.z
                 );
             set => SetValue(nameof(CitizenOCSpawnParameters_Air), value, ApplyChanges);
         }
@@ -657,7 +728,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(CitizenOCSpawnParameters_Ship),
-                    VanillaDataFromStorage.m_CitizenOCSpawnParameters.w
+                    () => VanillaDataFromStorage.m_CitizenOCSpawnParameters.w
                 );
             set => SetValue(nameof(CitizenOCSpawnParameters_Ship), value, ApplyChanges);
         }
@@ -682,7 +753,10 @@ namespace DemandMasterControl
         public float TeenSpawnPercentage
         {
             get =>
-                GetValue(nameof(TeenSpawnPercentage), VanillaDataFromStorage.m_TeenSpawnPercentage);
+                GetValue(
+                    nameof(TeenSpawnPercentage),
+                    () => VanillaDataFromStorage.m_TeenSpawnPercentage
+                );
             set => SetValue(nameof(TeenSpawnPercentage), value, ApplyChanges);
         }
 
@@ -699,7 +773,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(FrameIntervalForSpawning_Res),
-                    VanillaDataFromStorage.m_FrameIntervalForSpawning.x
+                    () => VanillaDataFromStorage.m_FrameIntervalForSpawning.x
                 );
             set => SetValue(nameof(FrameIntervalForSpawning_Res), value, ApplyChanges);
         }
@@ -717,7 +791,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(FrameIntervalForSpawning_Com),
-                    VanillaDataFromStorage.m_FrameIntervalForSpawning.y
+                    () => VanillaDataFromStorage.m_FrameIntervalForSpawning.y
                 );
             set => SetValue(nameof(FrameIntervalForSpawning_Com), value, ApplyChanges);
         }
@@ -735,7 +809,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(FrameIntervalForSpawning_Ind),
-                    VanillaDataFromStorage.m_FrameIntervalForSpawning.z
+                    () => VanillaDataFromStorage.m_FrameIntervalForSpawning.z
                 );
             set => SetValue(nameof(FrameIntervalForSpawning_Ind), value, ApplyChanges);
         }
@@ -753,7 +827,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(HouseholdSpawnSpeedFactor),
-                    VanillaDataFromStorage.m_HouseholdSpawnSpeedFactor
+                    () => VanillaDataFromStorage.m_HouseholdSpawnSpeedFactor
                 );
             set =>
                 SetValue(nameof(HouseholdSpawnSpeedFactor), Math.Max(value, 0.0001f), ApplyChanges);
@@ -764,7 +838,7 @@ namespace DemandMasterControl
             max = 100,
             step = 0.1f,
             scalarMultiplier = 100,
-            unit = Unit.kPercentage
+            unit = Unit.kPercentageSingleFraction
         )]
         [SettingsUISection(OCTab, EduGroup)]
         public float NewCitizenEducationParameters_Uneducated
@@ -772,7 +846,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(NewCitizenEducationParameters_Uneducated),
-                    VanillaDataFromStorage.m_NewCitizenEducationParameters.x
+                    () => VanillaDataFromStorage.m_NewCitizenEducationParameters.x
                 );
             set => SetValue(nameof(NewCitizenEducationParameters_Uneducated), value, ApplyChanges);
         }
@@ -782,7 +856,7 @@ namespace DemandMasterControl
             max = 100,
             step = 0.1f,
             scalarMultiplier = 100,
-            unit = Unit.kPercentage
+            unit = Unit.kPercentageSingleFraction
         )]
         [SettingsUISection(OCTab, EduGroup)]
         public float NewCitizenEducationParameters_PoorlyEducated
@@ -790,7 +864,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(NewCitizenEducationParameters_PoorlyEducated),
-                    VanillaDataFromStorage.m_NewCitizenEducationParameters.y
+                    () => VanillaDataFromStorage.m_NewCitizenEducationParameters.y
                 );
             set =>
                 SetValue(nameof(NewCitizenEducationParameters_PoorlyEducated), value, ApplyChanges);
@@ -801,7 +875,7 @@ namespace DemandMasterControl
             max = 100,
             step = 0.1f,
             scalarMultiplier = 100,
-            unit = Unit.kPercentage
+            unit = Unit.kPercentageSingleFraction
         )]
         [SettingsUISection(OCTab, EduGroup)]
         public float NewCitizenEducationParameters_Educated
@@ -809,7 +883,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(NewCitizenEducationParameters_Educated),
-                    VanillaDataFromStorage.m_NewCitizenEducationParameters.z
+                    () => VanillaDataFromStorage.m_NewCitizenEducationParameters.z
                 );
             set => SetValue(nameof(NewCitizenEducationParameters_Educated), value, ApplyChanges);
         }
@@ -819,7 +893,7 @@ namespace DemandMasterControl
             max = 100,
             step = 0.1f,
             scalarMultiplier = 100,
-            unit = Unit.kPercentage
+            unit = Unit.kPercentageSingleFraction
         )]
         [SettingsUISection(OCTab, EduGroup)]
         public float NewCitizenEducationParameters_WellEducated
@@ -827,7 +901,7 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(NewCitizenEducationParameters_WellEducated),
-                    VanillaDataFromStorage.m_NewCitizenEducationParameters.w
+                    () => VanillaDataFromStorage.m_NewCitizenEducationParameters.w
                 );
             set =>
                 SetValue(nameof(NewCitizenEducationParameters_WellEducated), value, ApplyChanges);
@@ -838,7 +912,7 @@ namespace DemandMasterControl
             max = 100,
             step = 0.1f,
             scalarMultiplier = 100,
-            unit = Unit.kPercentage
+            unit = Unit.kPercentageSingleFraction
         )]
         [SettingsUISection(OCTab, EduGroup)]
         public float NewCitizenEducationParameters_HighlyEducated
@@ -846,7 +920,8 @@ namespace DemandMasterControl
             get =>
                 GetValue(
                     nameof(NewCitizenEducationParameters_HighlyEducated),
-                    1
+                    () =>
+                        1
                         - VanillaDataFromStorage.m_NewCitizenEducationParameters.x
                         - VanillaDataFromStorage.m_NewCitizenEducationParameters.y
                         - VanillaDataFromStorage.m_NewCitizenEducationParameters.z

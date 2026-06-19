@@ -1,12 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Colossal.IO.AssetDatabase;
-using Colossal.Json;
-using Colossal.Serialization.Entities;
-using Game;
-using Game.Prefabs;
-using Game.SceneFlow;
-using Unity.Entities;
+﻿using Colossal.Json;
 using Unity.Mathematics;
 
 namespace DemandMasterControl.Systems
@@ -53,82 +45,8 @@ namespace DemandMasterControl.Systems
 
     public partial class VanillaDataSystem
     {
-        //private PrefabSystem prefabSystem;
-        //public static event Action OnVanillaDataLoaded;
-
-        //protected override void OnCreate()
-        //{
-        //    base.OnCreate();
-
-        //    RequireForUpdate<DemandParameterData>();
-        //}
-
-        //protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
-        //{
-        //    base.OnGamePreload(purpose, mode);
-        //}
-
-        //protected override void OnStartRunning()
-        //{
-        //    base.OnStartRunning();
-
-        //    CollectVanillaData();
-
-        //    // Once done, disable this system to prevent rerun
-        //    Enabled = false;
-        //}
-
-        //protected override void OnUpdate() { }
-
         public static void CollectVanillaData()
         {
-            //EntityQuery demandQuery = SystemAPI
-            //    .QueryBuilder()
-            //    .WithAll<DemandParameterData>()
-            //    .Build();
-            //DemandParameterData data = demandQuery.GetSingleton<DemandParameterData>();
-            //if (data.m_CommuterSlowSpawnFactor == 0)
-            //{
-            //    Mod.log.Info("DMC: Failed to load because of invalid values");
-            //    Mod.State = "Shutting down";
-            //    return;
-            //}
-            //VanillaDataStorage.VanillaData = new VanillaData
-            //{
-            //    m_MinimumHappiness = data.m_MinimumHappiness,
-            //    m_HappinessEffect = data.m_HappinessEffect,
-            //    m_TaxEffect = data.m_TaxEffect,
-            //    m_StudentEffect = data.m_StudentEffect,
-            //    m_AvailableWorkplaceEffect = data.m_AvailableWorkplaceEffect,
-            //    m_HomelessEffect = data.m_HomelessEffect,
-            //    m_NeutralHappiness = data.m_NeutralHappiness,
-            //    m_NeutralUnemployment = data.m_NeutralUnemployment,
-            //    m_NeutralAvailableWorkplacePercentage = data.m_NeutralAvailableWorkplacePercentage,
-            //    m_NeutralHomelessness = data.m_NeutralHomelessness,
-            //    m_FreeResidentialRequirement = data.m_FreeResidentialRequirement,
-            //    m_FreeCommercialProportion = data.m_FreeCommercialProportion,
-            //    m_FreeIndustrialProportion = data.m_FreeIndustrialProportion,
-            //    m_CommercialStorageMinimum = data.m_CommercialStorageMinimum,
-            //    m_CommercialStorageEffect = data.m_CommercialStorageEffect,
-            //    m_CommercialBaseDemand = data.m_CommercialBaseDemand,
-            //    m_IndustrialStorageMinimum = data.m_IndustrialStorageMinimum,
-            //    m_IndustrialStorageEffect = data.m_IndustrialStorageEffect,
-            //    m_IndustrialBaseDemand = data.m_IndustrialBaseDemand,
-            //    m_ExtractorBaseDemand = data.m_ExtractorBaseDemand,
-            //    m_StorageDemandMultiplier = data.m_StorageDemandMultiplier,
-            //    m_CommuterWorkerRatioLimit = data.m_CommuterWorkerRatioLimit,
-            //    m_CommuterSlowSpawnFactor = data.m_CommuterSlowSpawnFactor,
-            //    m_CommuterOCSpawnParameters = data.m_CommuterOCSpawnParameters,
-            //    m_TouristOCSpawnParameters = data.m_TouristOCSpawnParameters,
-            //    m_CitizenOCSpawnParameters = data.m_CitizenOCSpawnParameters,
-            //    m_TeenSpawnPercentage = data.m_TeenSpawnPercentage,
-            //    m_FrameIntervalForSpawning = data.m_FrameIntervalForSpawning,
-            //    m_HouseholdSpawnSpeedFactor = data.m_HouseholdSpawnSpeedFactor,
-            //    m_HotelRoomPercentRequirement = data.m_HotelRoomPercentRequirement,
-            //    m_NewCitizenEducationParameters = data.m_NewCitizenEducationParameters,
-            //};
-
-
             VanillaDataStorage.VanillaData = new VanillaData
             {
                 m_MinimumHappiness = 30,
@@ -167,17 +85,6 @@ namespace DemandMasterControl.Systems
             //#if DEBUG
             Mod.log.Info($"Vanilla data saved: {VanillaDataStorage.VanillaData.ToJSONString()}");
             //#endif
-
-            //GameManager.instance.localizationManager.AddSource(
-            //    "en-US",
-            //    new LocaleEN(Mod.m_Setting)
-            //);
-
-            //AssetDatabase.global.LoadSettings(
-            //    nameof(DemandMasterControl),
-            //    Mod.m_Setting,
-            //    new Setting(Mod.Instance)
-            //);
 
             Mod.State = "Ready";
         }

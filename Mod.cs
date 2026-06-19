@@ -1,14 +1,11 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Colossal.IO.AssetDatabase;
 using Colossal.Logging;
 using DemandMasterControl.Systems;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
-using Unity.Entities;
-using static Game.Rendering.Debug.RenderPrefabRenderer;
 
 namespace DemandMasterControl
 {
@@ -39,14 +36,9 @@ namespace DemandMasterControl
             //Task.Run(() => VanillaDataSystem.WaitForECSAndCollectData());
             m_Setting = new Setting(this);
             m_Setting.RegisterInOptionsUI();
+
             if (GameManager.instance.modManager.ListModsEnabled().Contains("Time2Work"))
-            {
                 m_Setting.IsRealisticTripsRunning = true;
-            }
-            else
-            {
-                m_Setting.IsRealisticTripsRunning = false;
-            }
 
             m_Setting.VanillaDataFromStorage = VanillaDataStorage.VanillaData;
             //World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<VanillaDataSystem>();

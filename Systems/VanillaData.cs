@@ -20,7 +20,7 @@ namespace DemandMasterControl.Systems
         public float m_NeutralUnemployment;
         public float m_NeutralAvailableWorkplacePercentage;
         public int m_NeutralHomelessness;
-        public int3 m_FreeResidentialRequirement;
+        public float3 m_FreeResidentialProportion;
         public float m_FreeCommercialProportion;
         public float m_FreeIndustrialProportion;
         public float m_CommercialStorageMinimum;
@@ -59,7 +59,7 @@ namespace DemandMasterControl.Systems
                 m_NeutralUnemployment = 30,
                 m_NeutralAvailableWorkplacePercentage = 10,
                 m_NeutralHomelessness = 2,
-                m_FreeResidentialRequirement = new int3(5, 60, 100),
+                m_FreeResidentialProportion = new float3(10f, 10f, 10f),
                 m_FreeCommercialProportion = 5,
                 m_FreeIndustrialProportion = 5,
                 m_CommercialStorageMinimum = 0.2f,

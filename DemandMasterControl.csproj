@@ -3,7 +3,7 @@
     <Configurations>Debug;Release</Configurations>
     <AssemblyName>DemandMasterControl</AssemblyName>
     <AssemblyTitle>Demand Master Control</AssemblyTitle>
-    <Version>2.1.0</Version>
+    <Version>2.1.1</Version>
     <Authors>StarQ</Authors>
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>

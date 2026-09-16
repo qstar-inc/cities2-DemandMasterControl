@@ -4,6 +4,7 @@
   <ShortDescription Value="Fine-tune every parameters leading to stable demand control." />
   <LongDescription>
 # Demand Master Control
+Fine-tune every parameters leading to stable demand control.
 
 Demand Master Control gives the player full control over how the city grows by allowing them to tweak various demand-related factors, such as employment rates, residential occupancy, tax effects, and commuter behavior. Whether you want a more realistic demand simulation or prefer a more customized experience, this mod provides the flexibility you need.
 
@@ -32,17 +33,16 @@ Demand Master Control gives the player full control over how the city grows by a
   <Screenshot Value="Properties/Screenshot01.png" />
   <Screenshot Value="Properties/Screenshot02.png" />
   <Tag Value="Code Mod" />
-  <ForumLink Value="" />
-  <ModVersion Value="2.1.0" />
-  <GameVersion Value="1.3.6*" />
+  <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/starq-mods-assets-projects-megathread.1930389/" />
+  <ModVersion Value="2.1.1" />
+  <GameVersion Value="1.6.2*" />
   <Dependency Id="" />
   <ChangeLog>
-- Recomplied for game version 1.3.6f1.
+- Fix changed demand values for game version 1.6.2f1.
 	</ChangeLog>
-  <ExternalLink
-    Type="discord"
-    Url="https://discord.com/channels/1024242828114673724/1270630977483444265"
-  />
   <ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-DemandMasterControl" />
+  <ExternalLink Type="discord" Url="https://discord.gg/U2PSjUzUuF" />
   <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/starq" />
+  <ExternalLink Type="crowdin" Url="https://crowdin.com/project/starq-cities2" />
+  <AccessLevel Value="Public" />
 </Publish>

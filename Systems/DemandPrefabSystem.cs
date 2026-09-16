@@ -64,11 +64,17 @@ namespace DemandMasterControl.Systems
                         setting.NeutralAvailableWorkplacePercentage;
                     data.m_NeutralHomelessness = setting.NeutralHomelessness;
 
-                    data.m_FreeResidentialRequirement = new int3(
-                        setting.FreeResidentialRequirement_Low,
-                        setting.FreeResidentialRequirement_Medium,
-                        setting.FreeResidentialRequirement_High
+                    data.m_FreeResidentialProportion = new float3(
+                        setting.FreeResidentialProportion_Low / 100,
+                        setting.FreeResidentialProportion_Medium / 100,
+                        setting.FreeResidentialProportion_High / 100
                     );
+
+                    //data.m_FreeResidentialRequirement = new int3(
+                    //    setting.FreeResidentialRequirement_Low,
+                    //    setting.FreeResidentialRequirement_Medium,
+                    //    setting.FreeResidentialRequirement_High
+                    //);
                     //data.m_FreeCommercialProportion = setting.FreeCommercialProportion;
                     //data.m_FreeIndustrialProportion = setting.FreeIndustrialProportion;
 

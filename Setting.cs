@@ -280,14 +280,14 @@ namespace DemandMasterControl
             unit = Unit.kPercentage
         )]
         [SettingsUISection(DemandTab, ResiDemandGroup)]
-        public int FreeResidentialRequirement_Low
+        public float FreeResidentialProportion_Low
         {
             get =>
                 GetValue(
-                    nameof(FreeResidentialRequirement_Low),
-                    () => VanillaDataFromStorage.m_FreeResidentialRequirement.x
+                    nameof(FreeResidentialProportion_Low),
+                    () => VanillaDataFromStorage.m_FreeResidentialProportion.x
                 );
-            set => SetValue(nameof(FreeResidentialRequirement_Low), value, ApplyChanges);
+            set => SetValue(nameof(FreeResidentialProportion_Low), value, ApplyChanges);
         }
 
         [SettingsUISlider(
@@ -298,14 +298,14 @@ namespace DemandMasterControl
             unit = Unit.kPercentage
         )]
         [SettingsUISection(DemandTab, ResiDemandGroup)]
-        public int FreeResidentialRequirement_Medium
+        public float FreeResidentialProportion_Medium
         {
             get =>
                 GetValue(
-                    nameof(FreeResidentialRequirement_Medium),
-                    () => VanillaDataFromStorage.m_FreeResidentialRequirement.y
+                    nameof(FreeResidentialProportion_Medium),
+                    () => VanillaDataFromStorage.m_FreeResidentialProportion.y
                 );
-            set => SetValue(nameof(FreeResidentialRequirement_Medium), value, ApplyChanges);
+            set => SetValue(nameof(FreeResidentialProportion_Medium), value, ApplyChanges);
         }
 
         [SettingsUISlider(
@@ -316,14 +316,14 @@ namespace DemandMasterControl
             unit = Unit.kPercentage
         )]
         [SettingsUISection(DemandTab, ResiDemandGroup)]
-        public int FreeResidentialRequirement_High
+        public float FreeResidentialProportion_High
         {
             get =>
                 GetValue(
-                    nameof(FreeResidentialRequirement_High),
-                    () => VanillaDataFromStorage.m_FreeResidentialRequirement.z
+                    nameof(FreeResidentialProportion_High),
+                    () => VanillaDataFromStorage.m_FreeResidentialProportion.z
                 );
-            set => SetValue(nameof(FreeResidentialRequirement_High), value, ApplyChanges);
+            set => SetValue(nameof(FreeResidentialProportion_High), value, ApplyChanges);
         }
 
         [SettingsUISlider(
@@ -433,9 +433,9 @@ namespace DemandMasterControl
         {
             set
             {
-                FreeResidentialRequirement_Low = 100;
-                FreeResidentialRequirement_Medium = 100;
-                FreeResidentialRequirement_High = 100;
+                FreeResidentialProportion_Low = 100;
+                FreeResidentialProportion_Medium = 100;
+                FreeResidentialProportion_High = 100;
                 CommercialBaseDemand = 50;
                 HotelRoomPercentRequirement = 50;
                 IndustrialBaseDemand = 50;
@@ -451,14 +451,14 @@ namespace DemandMasterControl
         {
             set
             {
-                FreeResidentialRequirement_Low = VanillaDataFromStorage
-                    .m_FreeResidentialRequirement
+                FreeResidentialProportion_Low = VanillaDataFromStorage
+                    .m_FreeResidentialProportion
                     .x;
-                FreeResidentialRequirement_Medium = VanillaDataFromStorage
-                    .m_FreeResidentialRequirement
+                FreeResidentialProportion_Medium = VanillaDataFromStorage
+                    .m_FreeResidentialProportion
                     .y;
-                FreeResidentialRequirement_High = VanillaDataFromStorage
-                    .m_FreeResidentialRequirement
+                FreeResidentialProportion_High = VanillaDataFromStorage
+                    .m_FreeResidentialProportion
                     .z;
                 CommercialBaseDemand = VanillaDataFromStorage.m_CommercialBaseDemand;
                 HotelRoomPercentRequirement = VanillaDataFromStorage.m_HotelRoomPercentRequirement;
@@ -979,11 +979,9 @@ namespace DemandMasterControl
             StudentEffect = VanillaDataFromStorage.m_StudentEffect;
             HomelessEffect = VanillaDataFromStorage.m_HomelessEffect;
             NeutralHomelessness = VanillaDataFromStorage.m_NeutralHomelessness;
-            FreeResidentialRequirement_Low = VanillaDataFromStorage.m_FreeResidentialRequirement.x;
-            FreeResidentialRequirement_Medium = VanillaDataFromStorage
-                .m_FreeResidentialRequirement
-                .y;
-            FreeResidentialRequirement_High = VanillaDataFromStorage.m_FreeResidentialRequirement.z;
+            FreeResidentialProportion_Low = VanillaDataFromStorage.m_FreeResidentialProportion.x;
+            FreeResidentialProportion_Medium = VanillaDataFromStorage.m_FreeResidentialProportion.y;
+            FreeResidentialProportion_High = VanillaDataFromStorage.m_FreeResidentialProportion.z;
             //FreeCommercialProportion = VanillaData.m_FreeCommercialProportion;
             //FreeIndustrialProportion = VanillaData.m_FreeIndustrialProportion;
             //CommercialStorageMinimum = VanillaData.m_CommercialStorageMinimum;

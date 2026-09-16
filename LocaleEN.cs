@@ -27,8 +27,8 @@ namespace DemandMasterControl
             Dictionary<string, int> indexCounts
         )
         {
-            static string NumUnoccupied(string type, string form = "buildings") =>
-                $"The number of {type} {form} need to be unoccupied.";
+            static string PercentUnoccupied(string type, string form = "buildings") =>
+                $"The percentage of {type} {form} need to be vacant before demand increases.";
             static string ImpToDemand(string type) =>
                 $"This value determines how important '{type}' is to the demand.";
             static string ZeroVal(string type) =>
@@ -199,38 +199,34 @@ namespace DemandMasterControl
                     $"{ConsNeutral("Homelessness")} {HigherBetter} {Default($"{VanillaDataFromStorage.m_NeutralHomelessness}%")}"
                 },
                 {
-                    m_Setting.GetOptionLabelLocaleID(
-                        nameof(Setting.FreeResidentialRequirement_Low)
-                    ),
+                    m_Setting.GetOptionLabelLocaleID(nameof(Setting.FreeResidentialProportion_Low)),
                     "Unoccupied Low Density Residential"
                 },
                 {
-                    m_Setting.GetOptionDescLocaleID(nameof(Setting.FreeResidentialRequirement_Low)),
-                    $"{NumUnoccupied("low density residential", "households")} {HigherBetter} {Default($"{VanillaDataFromStorage.m_FreeResidentialRequirement.x}%")}"
+                    m_Setting.GetOptionDescLocaleID(nameof(Setting.FreeResidentialProportion_Low)),
+                    $"{PercentUnoccupied("low density residential", "households")} {LowerBetter} {Default($"{VanillaDataFromStorage.m_FreeResidentialProportion.x}%")}"
                 },
                 {
                     m_Setting.GetOptionLabelLocaleID(
-                        nameof(Setting.FreeResidentialRequirement_Medium)
+                        nameof(Setting.FreeResidentialProportion_Medium)
                     ),
                     "Unoccupied Medium Density Residential"
                 },
                 {
                     m_Setting.GetOptionDescLocaleID(
-                        nameof(Setting.FreeResidentialRequirement_Medium)
+                        nameof(Setting.FreeResidentialProportion_Medium)
                     ),
-                    $"{NumUnoccupied("medium density residential", "households")} {HigherBetter} {Default($"{VanillaDataFromStorage.m_FreeResidentialRequirement.y}%")}"
+                    $"{PercentUnoccupied("medium density residential", "households")} {LowerBetter} {Default($"{VanillaDataFromStorage.m_FreeResidentialProportion.y}%")}"
                 },
                 {
                     m_Setting.GetOptionLabelLocaleID(
-                        nameof(Setting.FreeResidentialRequirement_High)
+                        nameof(Setting.FreeResidentialProportion_High)
                     ),
                     "Unoccupied High Density Residential"
                 },
                 {
-                    m_Setting.GetOptionDescLocaleID(
-                        nameof(Setting.FreeResidentialRequirement_High)
-                    ),
-                    $"{NumUnoccupied("high density residential", "households")} {HigherBetter} {Default($"{VanillaDataFromStorage.m_FreeResidentialRequirement.z}%")}"
+                    m_Setting.GetOptionDescLocaleID(nameof(Setting.FreeResidentialProportion_High)),
+                    $"{PercentUnoccupied("high density residential", "households")} {LowerBetter} {Default($"{VanillaDataFromStorage.m_FreeResidentialProportion.z}%")}"
                 },
                 {
                     m_Setting.GetOptionLabelLocaleID(nameof(Setting.CommercialBaseDemand)),
